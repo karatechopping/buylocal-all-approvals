@@ -6,7 +6,7 @@ import {
 } from "./airtable";
 import ClientSelector from "./components/ClientSelector";
 import ApprovalList from "./components/ApprovalList";
-import { Loader2, Users } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 const CONTROL_BASE_ID = "apptHiS9luQVH98CQ";
 const CONTROL_TABLE_NAME = "Controls";
@@ -132,7 +132,7 @@ function App() {
 
   // 3. Approve/Redo action
   const handleAction = useCallback(
-    async (id: string, action: "Approved" | "Redo") => {
+    async (id: string, action: "Approved" | "Redo" | "Discard") => {
       const client = clients.find((c) => c.id === selectedClientId);
       if (!client) return;
       setActionLoading((prev) => [...prev, id]);
@@ -159,10 +159,24 @@ function App() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-10">
       <div className="max-w-6xl mx-auto px-4">
-        <header className="flex items-center gap-4 mb-10">
-          <Users className="w-10 h-10 text-blue-600" />
-          <h1 className="text-3xl font-extrabold text-gray-800 tracking-tight">
-            Client Content Approval Dashboard
+        <header className="flex flex-col sm:flex-row items-center justify-center mb-10 relative">
+          <div className="mb-4 sm:mb-0 sm:absolute sm:left-0 flex items-center">
+            <img
+              src="https://buylocal.org.nz/wp-content/uploads/2022/12/buy-local-nz-logo_final_circle_white.png"
+              alt="Buy Local NZ Logo"
+              style={{
+                width: 100,
+                height: 100,
+                objectFit: "contain",
+                borderRadius: "50%",
+                background: "#fff",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.07)",
+              }}
+              className="shadow-md"
+            />
+          </div>
+          <h1 className="text-3xl font-extrabold text-gray-800 tracking-tight text-center w-full">
+            Client Social Media Approval
           </h1>
         </header>
         {error && (
