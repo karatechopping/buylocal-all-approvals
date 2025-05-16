@@ -1,5 +1,7 @@
+# Enable SPA routing for React/Vite on Apache (GreenGeeks)
 RewriteEngine On
-# Redirect all requests to index.html for client-side routing
+RewriteBase /
+RewriteRule ^index\.html$ - [L]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^ index.html [QSA,L]
+RewriteRule . /index.html [L]
