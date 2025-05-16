@@ -1,5 +1,5 @@
 import React from "react";
-import { CheckCircle2, RotateCcw } from "lucide-react";
+import { CheckCircle2, RotateCcw, Trash2 } from "lucide-react";
 
 type ApprovalItem = {
   id: string;
@@ -9,7 +9,7 @@ type ApprovalItem = {
 
 type Props = {
   items: ApprovalItem[];
-  onAction: (id: string, action: "Approved" | "Redo") => void;
+  onAction: (id: string, action: "Approved" | "Redo" | "Discard") => void;
   loadingIds: string[];
 };
 
@@ -64,12 +64,20 @@ export default function ApprovalList({ items, onAction, loadingIds }: Props) {
                 Approve
               </button>
               <button
-                className="flex items-center gap-2 px-6 py-3 bg-red-500 hover:bg-red-600 text-white rounded-lg font-semibold text-lg shadow transition disabled:opacity-50"
+                className="flex items-center gap-2 px-6 py-3 bg-yellow-400 hover:bg-yellow-500 text-gray-900 rounded-lg font-semibold text-lg shadow transition disabled:opacity-50"
                 onClick={() => onAction(item.id, "Redo")}
                 disabled={loadingIds.includes(item.id)}
               >
                 <RotateCcw className="w-6 h-6" />
                 Redo
+              </button>
+              <button
+                className="flex items-center gap-2 px-6 py-3 bg-red-500 hover:bg-red-600 text-white rounded-lg font-semibold text-lg shadow transition disabled:opacity-50"
+                onClick={() => onAction(item.id, "Discard")}
+                disabled={loadingIds.includes(item.id)}
+              >
+                <Trash2 className="w-6 h-6" />
+                Discard
               </button>
             </div>
           </div>
