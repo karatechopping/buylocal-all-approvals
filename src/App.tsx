@@ -1,9 +1,9 @@
-import React, { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
   fetchAirtableRecords,
   updateAirtableRecord,
-  AirtableRecord,
 } from "./airtable";
+import { PasswordProtection } from "./components/PasswordProtection";
 import ClientSelector from "./components/ClientSelector";
 import ApprovalList from "./components/ApprovalList";
 import { Loader2 } from "lucide-react";
@@ -11,11 +11,17 @@ import { Loader2 } from "lucide-react";
 const CONTROL_BASE_ID = "apptHiS9luQVH98CQ";
 const CONTROL_TABLE_NAME = "Controls";
 
-type ControlFields = {
+interface ControlFields {
   Client: string;
   airtableBase?: string;
   airtableSMPosts?: string;
-};
+}
+
+interface PostFields {
+  Status?: string;
+  imageUrls1x1?: string;
+  imageUrls2x3?: string;
+}
 
 type Client = {
   id: string;
@@ -32,6 +38,7 @@ type ApprovalItem = {
 };
 
 function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [clients, setClients] = useState<Client[]>([]);
   const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
   const [approvalItems, setApprovalItems] = useState<ApprovalItem[]>([]);
@@ -39,6 +46,14 @@ function App() {
   const [loadingApprovals, setLoadingApprovals] = useState(false);
   const [actionLoading, setActionLoading] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
+
+  // Check authentication on load
+  useEffect(() => {
+    const auth = sessionStorage.getItem('isAuthenticated');
+    if (auth === 'true') {
+      setIsAuthenticated(true);
+    }
+  }, []);
 
   // 1. Load clients from Controls table
   useEffect(() => {
@@ -70,7 +85,7 @@ function App() {
         const withCounts = await Promise.all(
           validClients.map(async (client) => {
             try {
-              const posts = await fetchAirtableRecords(
+              const posts = await fetchAirtableRecords<PostFields>(
                 client.baseId,
                 client.tableName,
                 `Status="Check"`,
@@ -107,7 +122,7 @@ function App() {
       const client = clients.find((c) => c.id === selectedClientId);
       if (!client) return;
       try {
-        const posts = await fetchAirtableRecords(
+        const posts = await fetchAirtableRecords<PostFields>(
           client.baseId,
           client.tableName,
           `Status="Check"`,
@@ -155,6 +170,10 @@ function App() {
     },
     [clients, selectedClientId]
   );
+
+  if (!isAuthenticated) {
+    return <PasswordProtection onAuthenticated={() => setIsAuthenticated(true)} />;
+  }
 
   return (
     <div className="min-h-screen w-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-10 overflow-hidden">
@@ -227,7 +246,6 @@ function App() {
               </div>
             ) : (
               <>
-
                 <ApprovalList
                   items={approvalItems}
                   onAction={handleAction}
