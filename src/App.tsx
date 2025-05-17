@@ -157,12 +157,12 @@ function App() {
   );
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-blue-50 to-indigo-100 py-10">
-      <div className="flex flex-col items-center w-full min-w-full">
+    <div className="min-h-screen w-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-10 overflow-hidden">
+      <div className="flex flex-col items-center">
         {/* Header Section */}
-        <div className="w-full max-w-[1000px] px-4 sm:px-0 mx-auto mb-10">
+        <div className="w-full max-w-[1000px] px-4 min-[930px]:px-0 mx-auto mb-10">
           {/* Mobile Logo */}
-          <div className="sm:hidden mb-6 flex justify-center">
+          <div className="min-[930px]:hidden mb-6 flex justify-center">
             <img
               src="https://buylocal.org.nz/wp-content/uploads/2022/12/buy-local-nz-logo_final_circle_white.png"
               alt="Buy Local NZ Logo"
@@ -171,7 +171,7 @@ function App() {
           </div>
           {/* Header with Desktop Logo */}
           <header className="relative flex items-center justify-center">
-            <div className="absolute left-0 hidden sm:block">
+            <div className="absolute left-0 hidden min-[930px]:block">
               <img
                 src="https://buylocal.org.nz/wp-content/uploads/2022/12/buy-local-nz-logo_final_circle_white.png"
                 alt="Buy Local NZ Logo"
@@ -229,9 +229,7 @@ function App() {
               </div>
             ) : (
               <>
-                <h2 className="text-xl font-bold mb-4 text-gray-700 px-6">
-                  Items to Approve
-                </h2>
+
                 <ApprovalList
                   items={approvalItems}
                   onAction={handleAction}

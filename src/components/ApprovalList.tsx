@@ -39,11 +39,12 @@ export default function ApprovalList({ items, onAction, loadingIds }: Props) {
     );
 
   return (
-    <div className="flex flex-col gap-6 sm:gap-4 mx-auto w-full px-4 sm:px-0 sm:w-[880px]">
+    <div className="flex flex-col gap-6 max-[930px]:gap-6 min-[930px]:gap-4 mx-auto w-full px-4 min-[930px]:px-0 min-[930px]:w-[910px]">
       {/* Bulk Actions Header */}
       <div className="bg-white rounded-xl shadow-md p-6 w-full">
-        <div className="flex flex-col items-start gap-4">
-          <div className="flex items-center gap-4 w-full">
+        {/* Mobile layout: Select All + item count and buttons side-by-side */}
+        <div className="flex items-center justify-between w-full min-[930px]:hidden">
+          <div className="flex items-center gap-2">
             <label className="flex items-center gap-2">
               <input
                 type="checkbox"
@@ -59,10 +60,11 @@ export default function ApprovalList({ items, onAction, loadingIds }: Props) {
               </span>
             )}
           </div>
-
-          <div className="flex flex-col sm:flex-row sm:justify-end gap-2">
+          
+          {/* Mobile-only buttons */}
+          <div className="flex gap-3">
             <button
-              className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-semibold text-lg shadow transition ${
+              className={`flex items-center justify-center p-3 rounded-lg shadow transition ${
                 selectedItems.length > 0 
                 ? "bg-green-500 hover:bg-green-600 text-white" 
                 : "bg-green-200 text-gray-500 cursor-not-allowed"
@@ -71,10 +73,9 @@ export default function ApprovalList({ items, onAction, loadingIds }: Props) {
               disabled={selectedItems.length === 0}
             >
               <CheckCircle2 className="w-5 h-5" />
-              Approve Selected
             </button>
             <button
-              className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-semibold text-lg shadow transition ${
+              className={`flex items-center justify-center p-3 rounded-lg shadow transition ${
                 selectedItems.length > 0 
                 ? "bg-yellow-400 hover:bg-yellow-500 text-gray-900" 
                 : "bg-yellow-200 text-gray-500 cursor-not-allowed"
@@ -83,10 +84,9 @@ export default function ApprovalList({ items, onAction, loadingIds }: Props) {
               disabled={selectedItems.length === 0}
             >
               <RotateCcw className="w-5 h-5" />
-              Redo Selected
             </button>
             <button
-              className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-semibold text-lg shadow transition ${
+              className={`flex items-center justify-center p-3 rounded-lg shadow transition ${
                 selectedItems.length > 0 
                 ? "bg-red-500 hover:bg-red-600 text-white" 
                 : "bg-red-200 text-gray-500 cursor-not-allowed"
@@ -95,17 +95,75 @@ export default function ApprovalList({ items, onAction, loadingIds }: Props) {
               disabled={selectedItems.length === 0}
             >
               <Trash2 className="w-5 h-5" />
-              Discard Selected
             </button>
+          </div>
+        </div>
+        
+        {/* Desktop layout: Select All + side-by-side buttons */}
+        <div className="hidden min-[930px]:block">
+          <div className="flex items-center justify-between">
+            <label className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={selectedItems.length === items.length}
+                onChange={(e) => handleSelectAll(e.target.checked)}
+                className="w-5 h-5 rounded"
+              />
+              <span className="font-medium text-lg">Select All</span>
+            </label>
+            {selectedItems.length > 0 && (
+              <span className="text-gray-600 text-lg">
+                {selectedItems.length} item{selectedItems.length !== 1 ? 's' : ''} selected
+              </span>
+            )}
+            <div className="flex gap-2 ml-4">
+              <button
+                className={`flex items-center justify-center gap-1 px-3 py-2 rounded-lg font-semibold text-sm shadow transition ${
+                  selectedItems.length > 0 
+                  ? "bg-green-500 hover:bg-green-600 text-white" 
+                  : "bg-green-200 text-gray-500 cursor-not-allowed"
+                }`}
+                onClick={() => selectedItems.length > 0 && handleBulkAction("Approved")}
+                disabled={selectedItems.length === 0}
+              >
+                <CheckCircle2 className="w-5 h-5" />
+                <span>Approve</span>
+            </button>
+              <button
+                className={`flex items-center justify-center gap-1 px-3 py-2 rounded-lg font-semibold text-sm shadow transition ${
+                  selectedItems.length > 0 
+                  ? "bg-yellow-400 hover:bg-yellow-500 text-gray-900" 
+                  : "bg-yellow-200 text-gray-500 cursor-not-allowed"
+                }`}
+                onClick={() => selectedItems.length > 0 && handleBulkAction("Redo")}
+                disabled={selectedItems.length === 0}
+              >
+                <RotateCcw className="w-5 h-5" />
+                <span>Redo</span>
+            </button>
+              <button
+                className={`flex items-center justify-center gap-1 px-3 py-2 rounded-lg font-semibold text-sm shadow transition ${
+                  selectedItems.length > 0 
+                  ? "bg-red-500 hover:bg-red-600 text-white" 
+                  : "bg-red-200 text-gray-500 cursor-not-allowed"
+                }`}
+                onClick={() => selectedItems.length > 0 && handleBulkAction("Discard")}
+                disabled={selectedItems.length === 0}
+              >
+                <Trash2 className="w-5 h-5" />
+                <span>Discard</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
+      {/* Item List */}
       {items.map((item, idx) => (
         <React.Fragment key={item.id}>
           <div className="bg-white rounded-xl shadow-md p-6 w-full">
-            <div className="flex flex-col sm:flex-row items-start gap-6">
-              <div className="w-full sm:w-auto flex items-center justify-between sm:block mb-4 sm:mb-0">
+            <div className="flex flex-col min-[930px]:flex-row items-start gap-6">
+              <div className="w-full min-[930px]:w-auto flex items-center justify-between min-[930px]:block mb-4 min-[930px]:mb-0">
                 {/* Checkbox Column */}
                 <div className="pt-1">
                   <input
@@ -116,7 +174,7 @@ export default function ApprovalList({ items, onAction, loadingIds }: Props) {
                   />
                 </div>
                 {/* Mobile Buttons */}
-                <div className="flex sm:hidden gap-3">
+                <div className="flex min-[930px]:hidden gap-3">
                   <button
                     className="p-3 bg-green-500 hover:bg-green-600 text-white rounded-lg shadow disabled:opacity-50"
                     onClick={() => onAction(item.id, "Approved")}
@@ -140,35 +198,65 @@ export default function ApprovalList({ items, onAction, loadingIds }: Props) {
                   </button>
                 </div>
               </div>
+              
               {/* Images Column */}
-              <div className="flex-1 flex flex-col sm:flex-row gap-8 sm:gap-6">
+              <div className="flex-1 flex flex-col min-[930px]:flex-row gap-8 min-[930px]:gap-6 min-[930px]:items-start">
                 {item.imageUrls1x1 && (
-                  <img
-                    src={item.imageUrls1x1}
-                    alt="1x1"
-                    className="w-[320px] h-[320px] object-cover rounded-lg border shadow-md sm:flex-shrink-0 max-sm:w-full max-sm:max-w-[400px]"
-                    style={{ minWidth: 320, minHeight: 320 }}
-                  />
+                  <div className="max-[930px]:w-full max-[930px]:flex max-[930px]:justify-center">
+                    <img
+                      src={item.imageUrls1x1}
+                      alt="1x1"
+                      className="min-[930px]:w-[320px] max-[930px]:w-[400px] object-cover rounded-lg border shadow-md"
+                      style={{ 
+                        width: "320px",
+                        maxWidth: "400px"
+                      }}
+                    />
+                  </div>
                 )}
                 {item.imageUrls2x3 && (
-                  <img
-                    src={item.imageUrls2x3}
-                    alt="2x3"
-                    className="w-[300px] h-[540px] object-cover rounded-lg border shadow-md sm:flex-shrink-0 max-sm:w-full max-sm:max-w-[400px]"
-                    style={{ minWidth: 300, minHeight: 540 }}
-                  />
+                  <div className={`max-[930px]:w-full max-[930px]:flex max-[930px]:justify-center ${!item.imageUrls1x1 ? 'min-[930px]:h-[540px] min-[930px]:w-[320px]' : ''}`}>
+                    {!item.imageUrls1x1 ? (
+                      <img
+                        src={item.imageUrls2x3}
+                        alt="2x3"
+                        className="min-[930px]:h-[540px] min-[930px]:w-auto max-[930px]:w-[400px] object-contain rounded-lg border shadow-md"
+                        style={{ 
+                          maxHeight: "540px",
+                          maxWidth: "320px"
+                        }}
+                      />
+                    ) : (
+                      <img
+                        src={item.imageUrls2x3}
+                        alt="2x3"
+        className="min-[930px]:w-[320px] max-[930px]:w-[400px] object-cover rounded-lg border shadow-md"
+        style={{ 
+          width: "320px",
+          maxWidth: "400px"
+        }}
+                      />
+                    )}
+                  </div>
                 )}
                 {!item.imageUrls1x1 && !item.imageUrls2x3 && (
-                  <img
-                    src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80"
-                    alt="No image"
-                    className="w-[320px] h-[320px] object-cover rounded-lg border opacity-40 sm:flex-shrink-0 max-sm:w-full max-sm:max-w-[400px]"
-                    style={{ minWidth: 320, minHeight: 320 }}
-                  />
+                  <div className="max-[930px]:w-full max-[930px]:flex max-[930px]:justify-center">
+                    <img
+                      src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80"
+                      alt="No image"
+                      className="min-[930px]:w-[320px] max-[930px]:w-[400px] object-cover rounded-lg border opacity-40"
+                      style={{ 
+                        width: "320px", 
+                        height: "320px",
+                        maxWidth: "400px"
+                      }}
+                    />
+                  </div>
                 )}
               </div>
+              
               {/* Desktop Buttons Column */}
-              <div className="hidden sm:flex flex-col gap-2 shrink-0 ml-6">
+              <div className="hidden min-[930px]:flex flex-col gap-2 shrink-0 ml-6">
                 <button
                   className="flex items-center gap-1 px-3 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-semibold text-sm shadow transition disabled:opacity-50"
                   onClick={() => onAction(item.id, "Approved")}
