@@ -157,48 +157,55 @@ function App() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-10">
-      <div className="flex flex-col items-center w-full">
-        <div className="w-[1000px] mx-auto relative mb-10">
-          <header className="flex items-center justify-center relative">
-            <div className="absolute left-0 flex items-center">
+    <div className="min-h-screen w-full bg-gradient-to-br from-blue-50 to-indigo-100 py-10">
+      <div className="flex flex-col items-center w-full min-w-full">
+        {/* Header Section */}
+        <div className="w-full max-w-[1000px] px-4 sm:px-0 mx-auto mb-10">
+          {/* Mobile Logo */}
+          <div className="sm:hidden mb-6 flex justify-center">
             <img
               src="https://buylocal.org.nz/wp-content/uploads/2022/12/buy-local-nz-logo_final_circle_white.png"
               alt="Buy Local NZ Logo"
-              style={{
-                width: 100,
-                height: 100,
-                objectFit: "contain",
-                borderRadius: "50%",
-                background: "#fff",
-                boxShadow: "0 2px 8px rgba(0,0,0,0.07)",
-              }}
-              className="shadow-md"
+              className="w-[120px] h-[120px] rounded-full bg-white shadow-md object-contain"
             />
+          </div>
+          {/* Header with Desktop Logo */}
+          <header className="relative flex items-center justify-center">
+            <div className="absolute left-0 hidden sm:block">
+              <img
+                src="https://buylocal.org.nz/wp-content/uploads/2022/12/buy-local-nz-logo_final_circle_white.png"
+                alt="Buy Local NZ Logo"
+                className="w-[100px] h-[100px] rounded-full bg-white shadow-md object-contain"
+              />
             </div>
-            <h1 className="text-3xl font-extrabold text-gray-800 tracking-tight text-center">
+            <h1 className="text-3xl font-extrabold text-gray-800 tracking-tight">
               Client Social Media Approval
             </h1>
           </header>
         </div>
+        
+        {/* Error Message */}
         {error && (
-          <div className="w-[1000px] mx-auto mb-6">
+          <div className="w-full max-w-[1000px] mx-auto mb-6 px-4 sm:px-0">
             <div className="bg-red-100 text-red-700 px-4 py-2 rounded">
               {error}
             </div>
           </div>
         )}
+        
+        {/* Main Content */}
         {loadingClients ? (
-          <div className="w-[1000px] mx-auto">
+          <div className="w-full max-w-[1000px] px-4 sm:px-0 mx-auto">
             <div className="flex items-center justify-center py-20">
-            <Loader2 className="animate-spin w-8 h-8 text-blue-400" />
-            <span className="ml-3 text-blue-700 font-medium">
-              Loading clients...
-            </span>
+              <Loader2 className="animate-spin w-8 h-8 text-blue-400" />
+              <span className="ml-3 text-blue-700 font-medium">
+                Loading clients...
+              </span>
             </div>
           </div>
         ) : (
-          <div className="w-[1000px] mx-auto">
+          <div className="w-full max-w-[1000px] px-4 sm:px-0 mx-auto">
+            {/* Client Selector */}
             <div className="w-[400px] mx-auto mb-10">
               <ClientSelector
                 clients={clients}
@@ -206,6 +213,8 @@ function App() {
                 onSelect={setSelectedClientId}
               />
             </div>
+            
+            {/* Approvals List */}
             {loadingApprovals ? (
               <div className="bg-white rounded-xl shadow-md p-6">
                 <h2 className="text-xl font-bold mb-4 text-gray-700">
@@ -232,7 +241,9 @@ function App() {
             )}
           </div>
         )}
-        <footer className="mt-16 text-center text-gray-400 text-sm w-[1000px] mx-auto">
+        
+        {/* Footer */}
+        <footer className="mt-16 text-center text-gray-400 text-sm w-full max-w-[1000px] px-4 sm:px-0 mx-auto">
           <span>
             Powered by Airtable &amp; React. Stock images from Unsplash.
           </span>
