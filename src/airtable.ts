@@ -1,9 +1,8 @@
 /**
  * Airtable API utility for multi-base, multi-table access.
  * Only supports simple CRUD for this dashboard.
+ * Uses Netlify Functions as a secure proxy to Airtable API.
  */
-const API_KEY = 'pati4yugolFbjkyZd.36d0f4c3d0565fc9134b8df7bdcf741cdb4b2a9c65b082b3f4698725bf318269';
-const API_URL = 'https://api.airtable.com/v0';
 
 export type AirtableRecord<T = any> = {
   id: string;
@@ -17,29 +16,33 @@ export async function fetchAirtableRecords<T>(
   filterByFormula?: string,
   fields?: string[]
 ): Promise<AirtableRecord<T>[]> {
-  const params = new URLSearchParams();
-  if (filterByFormula) params.append('filterByFormula', filterByFormula);
-  if (fields) fields.forEach(f => params.append('fields[]', f));
-  params.append('pageSize', '100');
-  const url = `${API_URL}/${baseId}/${encodeURIComponent(tableName)}?${params.toString()}`;
-  const res = await fetch(url, {
+  const response = await fetch('/.netlify/functions/fetch-records', {
+    method: 'POST',
     headers: {
-      Authorization: `Bearer ${API_KEY}`,
+      'Content-Type': 'application/json',
     },
+    body: JSON.stringify({
+      baseId,
+      tableName,
+      filterByFormula,
+      fields,
+    }),
   });
+
   let data;
   try {
-    data = await res.json();
+    data = await response.json();
   } catch (e) {
     throw new Error('Airtable fetch failed: Invalid JSON response');
   }
-  if (!res.ok) {
-    // Attach Airtable error message if present
-    const errMsg = data && data.error && data.error.message
-      ? `Airtable fetch failed: ${data.error.message}`
+
+  if (!response.ok) {
+    const errMsg = data && data.error
+      ? `Airtable fetch failed: ${data.error}`
       : 'Airtable fetch failed';
     throw new Error(errMsg);
   }
+
   return data.records;
 }
 
@@ -49,26 +52,32 @@ export async function updateAirtableRecord(
   recordId: string,
   fields: Record<string, any>
 ) {
-  const url = `${API_URL}/${baseId}/${encodeURIComponent(tableName)}/${recordId}`;
-  const res = await fetch(url, {
-    method: 'PATCH',
+  const response = await fetch('/.netlify/functions/update-record', {
+    method: 'POST',
     headers: {
-      Authorization: `Bearer ${API_KEY}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ fields }),
+    body: JSON.stringify({
+      baseId,
+      tableName,
+      recordId,
+      fields,
+    }),
   });
+
   let data;
   try {
-    data = await res.json();
+    data = await response.json();
   } catch (e) {
     throw new Error('Airtable update failed: Invalid JSON response');
   }
-  if (!res.ok) {
-    const errMsg = data && data.error && data.error.message
-      ? `Airtable update failed: ${data.error.message}`
+
+  if (!response.ok) {
+    const errMsg = data && data.error
+      ? `Airtable update failed: ${data.error}`
       : 'Airtable update failed';
     throw new Error(errMsg);
   }
+
   return data;
 }

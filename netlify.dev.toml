@@ -1,0 +1,15 @@
+[dev]
+  command = "npm run dev"
+  port = 8888
+  targetPort = 5173 # Vite's default port
+  publish = "dist"
+  framework = "vite"
+  autoLaunch = true
+
+[functions]
+  directory = "netlify/functions"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
