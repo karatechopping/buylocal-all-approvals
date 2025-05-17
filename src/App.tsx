@@ -160,7 +160,7 @@ function App() {
     <div className="min-h-screen w-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-10 overflow-hidden">
       <div className="flex flex-col items-center">
         {/* Header Section */}
-        <div className="w-full max-w-[1000px] px-4 min-[930px]:px-0 mx-auto mb-10">
+        <div className="w-full mx-auto mb-10">
           {/* Mobile Logo */}
           <div className="min-[930px]:hidden mb-6 flex justify-center">
             <img
@@ -195,7 +195,7 @@ function App() {
         
         {/* Main Content */}
         {loadingClients ? (
-          <div className="w-full max-w-[1000px] px-4 sm:px-0 mx-auto">
+          <div className="w-full mx-auto">
             <div className="flex items-center justify-center py-20">
               <Loader2 className="animate-spin w-8 h-8 text-blue-400" />
               <span className="ml-3 text-blue-700 font-medium">
@@ -204,15 +204,13 @@ function App() {
             </div>
           </div>
         ) : (
-          <div className="w-full max-w-[1000px] px-4 sm:px-0 mx-auto">
+          <div className="w-full mx-auto">
             {/* Client Selector */}
-            <div className="w-[400px] mx-auto mb-10">
-              <ClientSelector
-                clients={clients}
-                selectedClientId={selectedClientId}
-                onSelect={setSelectedClientId}
-              />
-            </div>
+            <ClientSelector
+              clients={clients}
+              selectedClientId={selectedClientId}
+              onSelect={setSelectedClientId}
+            />
             
             {/* Approvals List */}
             {loadingApprovals ? (

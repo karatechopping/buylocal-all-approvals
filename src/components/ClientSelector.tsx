@@ -21,7 +21,8 @@ export default function ClientSelector({
   onSelect,
 }: Props) {
   return (
-    <div className="bg-white rounded-xl shadow p-6 mb-8">
+    <div className="flex flex-col gap-6 max-[930px]:gap-6 min-[930px]:gap-4 mx-auto w-full px-4 min-[930px]:px-0 min-[930px]:w-[910px] mb-8">
+      <div className="bg-white rounded-xl shadow-md p-6 w-full">
       <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
         <Building2 className="w-6 h-6 text-blue-500" />
         Clients
@@ -46,6 +47,7 @@ export default function ClientSelector({
           </li>
         ))}
       </ul>
+      </div>
     </div>
   );
 }
