@@ -259,7 +259,24 @@ function App() {
         {/* Footer */}
         <footer className="mt-16 text-center text-gray-400 text-sm w-full max-w-[1000px] px-4 sm:px-0 mx-auto">
           <span>
-            Powered by Airtable &amp; React. Stock images from Unsplash.
+            Built for{' '}
+            <a 
+              href="https://buylocal.org.nz" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-blue-600 hover:text-blue-800 transition-colors"
+            >
+              Buy Local NZ
+            </a>{' '}
+            by{' '}
+            <a 
+              href="https://marketingtech.pro" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-blue-600 hover:text-blue-800 transition-colors"
+            >
+              MarketingTech.Pro
+            </a>
           </span>
         </footer>
       </div>
