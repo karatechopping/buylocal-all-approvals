@@ -188,19 +188,19 @@ function App() {
               className="w-[120px] h-[120px] rounded-full bg-white shadow-md object-contain"
             />
           </div>
-          {/* Header with Desktop Logo */}
-          <header className="relative flex items-center justify-center">
-            <div className="absolute left-0 hidden min-[930px]:block">
-              <img
-                src="https://buylocal.org.nz/wp-content/uploads/2022/12/buy-local-nz-logo_final_circle_white.png"
-                alt="Buy Local NZ Logo"
-                className="w-[100px] h-[100px] rounded-full bg-white shadow-md object-contain"
-              />
-            </div>
-            <h1 className="text-3xl font-extrabold text-gray-800 tracking-tight">
-              Client Social Media Approval
-            </h1>
-          </header>
+            {/* Header with Desktop Logo */}
+            <header className="flex items-center justify-center gap-4">
+              <div className="hidden min-[930px]:block">
+                <img
+                  src="https://buylocal.org.nz/wp-content/uploads/2022/12/buy-local-nz-logo_final_circle_white.png"
+                  alt="Buy Local NZ Logo"
+                  className="w-[100px] h-[100px] rounded-full bg-white shadow-md object-contain"
+                />
+              </div>
+              <h1 className="text-3xl font-extrabold text-gray-800 tracking-tight">
+                Client Social Media Approval
+              </h1>
+            </header>
         </div>
         
         {/* Error Message */}

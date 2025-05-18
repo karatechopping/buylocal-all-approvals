@@ -2,61 +2,67 @@ import { Handler } from '@netlify/functions';
 import bcrypt from 'bcryptjs';
 
 export const handler: Handler = async (event) => {
-  // Enable CORS for local development
-  const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  };
-
-  // Handle preflight request
+  // Handle OPTIONS request for CORS
   if (event.httpMethod === 'OPTIONS') {
     return {
-      statusCode: 204,
-      headers,
+      statusCode: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      },
       body: '',
     };
   }
 
+  // Only allow POST
   if (event.httpMethod !== 'POST') {
     return {
       statusCode: 405,
-      headers,
-      body: 'Method Not Allowed',
+      body: JSON.stringify({ error: 'Method not allowed' }),
     };
   }
 
   try {
+    // Parse request body
     const { password } = JSON.parse(event.body || '{}');
-    const storedHash = process.env.ADMIN_PASSWORD_HASH;
-
-    if (!password || !storedHash) {
+    
+    // Validate input
+    if (!password) {
       return {
         statusCode: 400,
-        headers,
-        body: JSON.stringify({ error: 'Missing password or hash configuration' }),
+        body: JSON.stringify({ error: 'Password is required' }),
       };
     }
 
-    const isMatch = await bcrypt.compare(password, storedHash);
+    // Get stored hash
+    const hash = process.env.ADMIN_PASSWORD_HASH;
+    if (!hash) {
+      return {
+        statusCode: 500,
+        body: JSON.stringify({ error: 'Server configuration error' }),
+      };
+    }
 
-    if (isMatch) {
+    // Compare password
+    const match = await bcrypt.compare(password, hash);
+
+    if (match) {
       return {
         statusCode: 200,
-        headers,
         body: JSON.stringify({ success: true }),
       };
     }
 
     return {
       statusCode: 401,
-      headers,
-      body: JSON.stringify({ success: false, error: 'Invalid password' }),
+      body: JSON.stringify({ error: 'Invalid password' }),
     };
+
   } catch (error) {
+    console.error('Password verification error:', error);
     return {
       statusCode: 500,
-      headers,
       body: JSON.stringify({ error: 'Internal server error' }),
     };
   }

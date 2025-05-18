@@ -9,3 +9,6 @@ dist
 
 # Local Netlify folder
 .netlify
+
+
+ netlify/functions/verify-password.ts
