@@ -452,6 +452,7 @@ export default forwardRef(function FeaturedClientProfile(
     const [contactData, setContactData] = useState<any>(null);
 
     const fetchContactData = async () => {
+        const scrollPosition = window.scrollY;
         setLoading(true);
         setError(null);
         
@@ -469,6 +470,14 @@ export default forwardRef(function FeaturedClientProfile(
             const data = await response.json();
             console.log('GHL Response:', data);
             setContactData(data);
+            
+            // After state updates, restore scroll position
+            requestAnimationFrame(() => {
+                window.scrollTo({
+                    top: scrollPosition,
+                    behavior: 'instant'
+                });
+            });
         } catch (err) {
             setError(err instanceof Error ? err.message : 'An error occurred');
             console.error('Error fetching contact:', err);
