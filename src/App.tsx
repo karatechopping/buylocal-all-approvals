@@ -37,8 +37,11 @@ type ApprovalItem = {
   imageUrls2x3?: string;
 };
 
+type ViewMode = 'tool-select' | 'social' | 'featured';
+
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [viewMode, setViewMode] = useState<ViewMode>('tool-select');
   const [clients, setClients] = useState<Client[]>([]);
   const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
   const [approvalItems, setApprovalItems] = useState<ApprovalItem[]>([]);
@@ -54,6 +57,47 @@ function App() {
       setIsAuthenticated(true);
     }
   }, []);
+
+  const renderToolSelector = () => (
+    <div className="text-center">
+      {/* Mobile Logo */}
+      <div className="min-[930px]:hidden mb-6 flex justify-center">
+        <img
+          src="https://buylocal.org.nz/wp-content/uploads/2022/12/buy-local-nz-logo_final_circle_white.png"
+          alt="Buy Local NZ Logo"
+          className="w-[120px] h-[120px] rounded-full bg-white shadow-md object-contain cursor-pointer"
+        />
+      </div>
+
+      {/* Desktop Logo */}
+      <div className="hidden min-[930px]:block mb-6">
+        <img
+          src="https://buylocal.org.nz/wp-content/uploads/2022/12/buy-local-nz-logo_final_circle_white.png"
+          alt="Buy Local NZ Logo"
+          className="w-[100px] h-[100px] rounded-full bg-white shadow-md object-contain mx-auto"
+        />
+      </div>
+
+      <h1 className="text-3xl font-extrabold text-gray-800 tracking-tight mb-8">
+        Buy Local Approvals Tool
+      </h1>
+
+      <div className="flex flex-col items-center gap-4 max-w-md mx-auto">
+        <button
+          onClick={() => setViewMode('social')}
+          className="w-full py-4 px-6 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold transition-all shadow-md"
+        >
+          Social Media Approvals
+        </button>
+        <button
+          onClick={() => setViewMode('featured')}
+          className="w-full py-4 px-6 bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold transition-all shadow-md"
+        >
+          Featured Upgrade Approvals
+        </button>
+      </div>
+    </div>
+  );
 
   // 1. Load clients from Controls table
   useEffect(() => {
@@ -177,109 +221,115 @@ function App() {
 
   return (
     <div className="min-h-screen w-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-10 overflow-hidden">
-      <div className="flex flex-col items-center">
-        {/* Header Section */}
-        <div className="w-full mx-auto mb-10">
-          {/* Mobile Logo */}
-          <div className="min-[930px]:hidden mb-6 flex justify-center">
-            <img
-              src="https://buylocal.org.nz/wp-content/uploads/2022/12/buy-local-nz-logo_final_circle_white.png"
-              alt="Buy Local NZ Logo"
-              className="w-[120px] h-[120px] rounded-full bg-white shadow-md object-contain"
-            />
-          </div>
-            {/* Header with Desktop Logo */}
-            <header className="flex items-center justify-center gap-4">
-              <div className="hidden min-[930px]:block">
-                <img
-                  src="https://buylocal.org.nz/wp-content/uploads/2022/12/buy-local-nz-logo_final_circle_white.png"
-                  alt="Buy Local NZ Logo"
-                  className="w-[100px] h-[100px] rounded-full bg-white shadow-md object-contain"
-                />
-              </div>
-              <h1 className="text-3xl font-extrabold text-gray-800 tracking-tight">
-                Client Social Media Approval
-              </h1>
-            </header>
+      {viewMode === 'tool-select' ? (
+        <div className="flex flex-col items-center justify-center min-h-[calc(100vh-160px)]">
+          {renderToolSelector()}
         </div>
-        
-        {/* Error Message */}
-        {error && (
-          <div className="w-full max-w-[1000px] mx-auto mb-6 px-4 sm:px-0">
-            <div className="bg-red-100 text-red-700 px-4 py-2 rounded">
-              {error}
+      ) : (
+        <>
+          {/* Header with Back Navigation */}
+          <div className="w-full max-w-[1000px] mx-auto mb-8 px-4 sm:px-0">
+            <div
+              className="flex flex-col min-[930px]:flex-row items-center justify-center gap-4 cursor-pointer"
+              onClick={() => setViewMode('tool-select')}
+            >
+              <img
+                src="https://buylocal.org.nz/wp-content/uploads/2022/12/buy-local-nz-logo_final_circle_white.png"
+                alt="Buy Local NZ Logo"
+                className="w-[120px] h-[120px] min-[930px]:w-[100px] min-[930px]:h-[100px] rounded-full bg-white shadow-md object-contain"
+              />
+              <h1 className="text-3xl font-extrabold text-gray-800 tracking-tight text-center">
+                {viewMode === 'social'
+                  ? 'Client Social Media Approval'
+                  : 'Featured Upgrade Approvals'}
+              </h1>
             </div>
           </div>
-        )}
-        
-        {/* Main Content */}
-        {loadingClients ? (
-          <div className="w-full mx-auto">
-            <div className="flex items-center justify-center py-20">
-              <Loader2 className="animate-spin w-8 h-8 text-blue-400" />
-              <span className="ml-3 text-blue-700 font-medium">
-                Loading clients...
-              </span>
-            </div>
-          </div>
-        ) : (
-          <div className="w-full mx-auto">
-            {/* Client Selector */}
-            <ClientSelector
-              clients={clients}
-              selectedClientId={selectedClientId}
-              onSelect={setSelectedClientId}
-            />
-            
-            {/* Approvals List */}
-            {loadingApprovals ? (
-              <div className="bg-white rounded-xl shadow-md p-6">
-                <h2 className="text-xl font-bold mb-4 text-gray-700">
-                  Items to Approve
-                </h2>
-                <div className="flex items-center justify-center py-12">
-                  <Loader2 className="animate-spin w-6 h-6 text-blue-400" />
+          <div className="flex flex-col items-center">
+            {/* Removed duplicate mobile logo section */}
+
+            {/* Error Message */}
+            {error && (
+              <div className="w-full max-w-[1000px] mx-auto mb-6 px-4 sm:px-0">
+                <div className="bg-red-100 text-red-700 px-4 py-2 rounded">
+                  {error}
+                </div>
+              </div>
+            )}
+
+            {/* Main Content */}
+            {loadingClients ? (
+              <div className="w-full mx-auto">
+                <div className="flex items-center justify-center py-20">
+                  <Loader2 className="animate-spin w-8 h-8 text-blue-400" />
                   <span className="ml-3 text-blue-700 font-medium">
-                    Loading items...
+                    Loading clients...
                   </span>
                 </div>
               </div>
             ) : (
-              <>
-                <ApprovalList
-                  items={approvalItems}
-                  onAction={handleAction}
-                  loadingIds={actionLoading}
-                />
-              </>
+              <div className="w-full mx-auto">
+                {/* Client Selector - Only for Social Media view */}
+                {viewMode === 'social' && (
+                  <ClientSelector
+                    clients={clients}
+                    selectedClientId={selectedClientId}
+                    onSelect={setSelectedClientId}
+                  />
+                )}
+                {/* Approvals List */}
+                {loadingApprovals ? (
+                  <div className="bg-white rounded-xl shadow-md p-6">
+                    <h2 className="text-xl font-bold mb-4 text-gray-700">
+                      Items to Approve
+                    </h2>
+                    <div className="flex items-center justify-center py-12">
+                      <Loader2 className="animate-spin w-6 h-6 text-blue-400" />
+                      <span className="ml-3 text-blue-700 font-medium">
+                        Loading items...
+                      </span>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <ApprovalList
+                      items={approvalItems}
+                      onAction={handleAction}
+                      loadingIds={actionLoading}
+                    />
+                  </>
+                )}
+              </div>
+            )}
+
+            {/* Footer */}
+            {viewMode === 'social' && (
+              <footer className="mt-16 text-center text-gray-400 text-sm w-full max-w-[1000px] px-4 sm:px-0 mx-auto">
+                <span>
+                  Built for{' '}
+                  <a
+                    href="https://buylocal.org.nz"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:text-blue-800 transition-colors"
+                  >
+                    Buy Local NZ
+                  </a>{' '}
+                  by{' '}
+                  <a
+                    href="https://marketingtech.pro"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:text-blue-800 transition-colors"
+                  >
+                    MarketingTech.Pro
+                  </a>
+                </span>
+              </footer>
             )}
           </div>
-        )}
-        
-        {/* Footer */}
-        <footer className="mt-16 text-center text-gray-400 text-sm w-full max-w-[1000px] px-4 sm:px-0 mx-auto">
-          <span>
-            Built for{' '}
-            <a 
-              href="https://buylocal.org.nz" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-blue-600 hover:text-blue-800 transition-colors"
-            >
-              Buy Local NZ
-            </a>{' '}
-            by{' '}
-            <a 
-              href="https://marketingtech.pro" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-blue-600 hover:text-blue-800 transition-colors"
-            >
-              MarketingTech.Pro
-            </a>
-          </span>
-        </footer>
-      </div>
+        </>
+      )}
     </div>
   );
 }
