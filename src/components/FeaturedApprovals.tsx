@@ -1,17 +1,16 @@
 import { useState } from 'react';
 import FeaturedClientSelector from './FeaturedClientSelector';
+import FeaturedClientProfile from './FeaturedClientProfile';
+import { RotateCw } from 'lucide-react';
 
 export default function FeaturedApprovals() {
     const [selectedClientId, setSelectedClientId] = useState<string>('');
-    const [loading, setLoading] = useState(false);
     const [refreshTrigger, setRefreshTrigger] = useState(0);
+    const [profileRefreshTrigger, setProfileRefreshTrigger] = useState(0);
 
     // Handle client selection
     const handleClientSelect = (clientId: string) => {
         setSelectedClientId(clientId);
-        setLoading(true);
-        // We'll implement the approval fetching logic later
-        setTimeout(() => setLoading(false), 1000); // Temporary simulation
     };
 
     return (
@@ -29,65 +28,37 @@ export default function FeaturedApprovals() {
                     <button
                         onClick={() => setRefreshTrigger(prev => prev + 1)}
                         className="ml-4 p-2 rounded-lg text-blue-600 hover:bg-blue-50 transition-colors"
-                        title="Refresh Featured Clients"
+                        title="Refresh Featured Clients List"
                     >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="20"
-                            height="20"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                        >
-                            <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
-                            <path d="M21 3v5h-5" />
-                            <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
-                            <path d="M3 21v-5h5" />
-                        </svg>
+                        <RotateCw className="w-5 h-5" />
                     </button>
                 </div>
             </div>
 
-            {/* Approval Content */}
-            {selectedClientId ? (
-                loading ? (
-                    <div className="bg-white rounded-xl shadow-md p-6">
-                        <div className="flex items-center justify-center py-8">
-                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                            <span className="ml-2 text-gray-600">Loading approval details...</span>
-                        </div>
+            {/* Client Profile Section */}
+            {selectedClientId && (
+                <div className="bg-white rounded-xl shadow-md p-6">
+                    <div className="flex justify-between items-center mb-6">
+                        <h2 className="text-xl font-semibold text-gray-900">
+                            Profile Details
+                        </h2>
+                        <button
+                            onClick={() => setProfileRefreshTrigger(prev => prev + 1)}
+                            className="p-2 rounded-lg text-blue-600 hover:bg-blue-50 transition-colors"
+                            title="Refresh Profile Data"
+                        >
+                            <RotateCw className="w-5 h-5" />
+                        </button>
                     </div>
-                ) : (
-                    <div className="bg-white rounded-xl shadow-md p-6">
-                        <div className="space-y-4">
-                            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                                <h3 className="font-medium text-yellow-800 mb-2">
-                                    Profile Completion Required
-                                </h3>
-                                <p className="text-yellow-700 text-sm">
-                                    This featured client needs to complete their profile information
-                                    before it can be approved and published.
-                                </p>
-                            </div>
+                    <FeaturedClientProfile 
+                        contactId={selectedClientId}
+                        key={profileRefreshTrigger} // This forces a remount when refreshing
+                    />
+                </div>
+            )}
 
-                            <div className="flex space-x-3">
-                                <button className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">
-                                    Approve Profile
-                                </button>
-                                <button className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700">
-                                    Request Changes
-                                </button>
-                                <button className="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700">
-                                    Send Reminder
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                )
-            ) : (
+            {/* Show empty state when no client is selected */}
+            {!selectedClientId && (
                 <div className="bg-white rounded-xl shadow-md p-6">
                     <div className="text-center py-8">
                         <div className="text-gray-400 mb-4">
@@ -99,7 +70,7 @@ export default function FeaturedApprovals() {
                             Select a Featured Client
                         </h3>
                         <p className="text-gray-600">
-                            Choose a client from the list to review their profile completion status and manage approvals.
+                            Choose a client from the list above to review their profile completion status and manage approvals.
                         </p>
                     </div>
                 </div>

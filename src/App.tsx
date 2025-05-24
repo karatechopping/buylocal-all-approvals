@@ -41,7 +41,11 @@ type ApprovalItem = {
 type ViewMode = 'tool-select' | 'social' | 'featured';
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  // Changed this line to check sessionStorage on initial load
+  const [isAuthenticated, setIsAuthenticated] = useState(() => 
+    sessionStorage.getItem('isAuthenticated') === 'true'
+  );
+  
   const [viewMode, setViewMode] = useState<ViewMode>(() => {
     const savedMode = localStorage.getItem('viewMode');
     return (savedMode as ViewMode) || 'tool-select';
