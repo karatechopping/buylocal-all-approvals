@@ -149,6 +149,7 @@ export const handler: Handler = async (event) => {
                 name: fullName,
                 email: contact.email,
                 phone: contact.phone,
+                companyName: contact.companyName || customFields.company_name || customFields['contact.company_name'],
                 featuredUpgradeDate: customFields.featured_upgrade_date || customFields['contact.featured_upgrade_date'],
                 profileComplete: customFields.featured_profile_complete || customFields['contact.featured_profile_complete']
             };

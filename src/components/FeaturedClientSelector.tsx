@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Building2, AlertCircle } from 'lucide-react';
 
@@ -10,16 +9,19 @@ interface GHLContact {
     phone?: string;
     featuredUpgradeDate?: string;
     profileComplete?: string;
+    companyName?: string;
 }
 
 type FeaturedClientSelectorProps = {
     selectedClientId?: string;
     onSelect: (clientId: string) => void;
+    refreshTrigger?: number;
 };
 
 export default function FeaturedClientSelector({
     selectedClientId,
-    onSelect
+    onSelect,
+    refreshTrigger = 0
 }: FeaturedClientSelectorProps) {
     const [clients, setClients] = useState<GHLContact[]>([]);
     const [loading, setLoading] = useState(true);
@@ -44,43 +46,44 @@ export default function FeaturedClientSelector({
         return data.contacts;
     };
 
+    const loadFeaturedClients = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+
+            // Search for featured contacts
+            console.log('Starting featured contacts fetch...');
+            const contacts = await searchFeaturedContacts();
+            console.log('GHL API Response received:', {
+                contactsCount: contacts.length,
+                sampleId: contacts[0]?.id
+            });
+
+            // Set the clients directly since they're already in the right format
+            console.log('Setting clients:', {
+                clientsCount: contacts.length,
+                sample: contacts[0]
+            });
+
+            setClients(contacts);
+
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+            console.error('Failed to load featured clients:', {
+                error,
+                message: errorMessage,
+                stack: error instanceof Error ? error.stack : undefined
+            });
+            setError(errorMessage);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Add useEffect with refreshTrigger dependency
     useEffect(() => {
-        const loadFeaturedClients = async () => {
-            try {
-                setLoading(true);
-                setError(null);
-
-                // Search for featured contacts
-                console.log('Starting featured contacts fetch...');
-                const contacts = await searchFeaturedContacts();
-                console.log('GHL API Response received:', {
-                    contactsCount: contacts.length,
-                    sampleId: contacts[0]?.id
-                });
-
-                // Set the clients directly since they're already in the right format
-                console.log('Setting clients:', {
-                    clientsCount: contacts.length,
-                    sample: contacts[0]
-                });
-
-                setClients(contacts);
-
-            } catch (error) {
-                const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
-                console.error('Failed to load featured clients:', {
-                    error,
-                    message: errorMessage,
-                    stack: error instanceof Error ? error.stack : undefined
-                });
-                setError(errorMessage);
-            } finally {
-                setLoading(false);
-            }
-        };
-
         loadFeaturedClients();
-    }, []);
+    }, [refreshTrigger]);
 
     const renderContent = () => {
         if (loading) {
@@ -172,7 +175,7 @@ export default function FeaturedClientSelector({
                                                     ? 'text-blue-900'
                                                     : 'text-gray-900'
                                                     }`}>
-                                                    {client.name}
+                                                    {client.companyName}
                                                 </p>
                                                 <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${selectedClientId === client.id
                                                     ? 'bg-blue-100 text-blue-800'
@@ -210,7 +213,4 @@ export default function FeaturedClientSelector({
             {renderContent()}
         </div>
     );
-
-
 }
-

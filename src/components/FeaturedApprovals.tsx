@@ -4,6 +4,7 @@ import FeaturedClientSelector from './FeaturedClientSelector';
 export default function FeaturedApprovals() {
     const [selectedClientId, setSelectedClientId] = useState<string>('');
     const [loading, setLoading] = useState(false);
+    const [refreshTrigger, setRefreshTrigger] = useState(0);
 
     // Handle client selection
     const handleClientSelect = (clientId: string) => {
@@ -17,10 +18,37 @@ export default function FeaturedApprovals() {
         <div className="flex flex-col gap-6 max-[930px]:gap-6 min-[930px]:gap-4 mx-auto w-full px-4 min-[930px]:px-0 min-[930px]:w-[910px]">
             {/* Client Selector at the top */}
             <div className="bg-white rounded-xl shadow-md p-6 w-full">
-                <FeaturedClientSelector
-                    selectedClientId={selectedClientId}
-                    onSelect={handleClientSelect}
-                />
+                <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                        <FeaturedClientSelector
+                            selectedClientId={selectedClientId}
+                            onSelect={handleClientSelect}
+                            refreshTrigger={refreshTrigger}
+                        />
+                    </div>
+                    <button
+                        onClick={() => setRefreshTrigger(prev => prev + 1)}
+                        className="ml-4 p-2 rounded-lg text-blue-600 hover:bg-blue-50 transition-colors"
+                        title="Refresh Featured Clients"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="20"
+                            height="20"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                        >
+                            <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+                            <path d="M21 3v5h-5" />
+                            <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+                            <path d="M3 21v-5h5" />
+                        </svg>
+                    </button>
+                </div>
             </div>
 
             {/* Approval Content */}
@@ -79,4 +107,3 @@ export default function FeaturedApprovals() {
         </div>
     );
 }
-

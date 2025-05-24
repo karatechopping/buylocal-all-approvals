@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import {
   fetchAirtableRecords,
   updateAirtableRecord,
@@ -42,7 +42,10 @@ type ViewMode = 'tool-select' | 'social' | 'featured';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [viewMode, setViewMode] = useState<ViewMode>('tool-select');
+  const [viewMode, setViewMode] = useState<ViewMode>(() => {
+    const savedMode = localStorage.getItem('viewMode');
+    return (savedMode as ViewMode) || 'tool-select';
+  });
   const [clients, setClients] = useState<Client[]>([]);
   const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
   const [approvalItems, setApprovalItems] = useState<ApprovalItem[]>([]);
@@ -51,13 +54,124 @@ function App() {
   const [actionLoading, setActionLoading] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  // Check authentication on load
+  // Save viewMode to localStorage whenever it changes
   useEffect(() => {
-    const auth = sessionStorage.getItem('isAuthenticated');
-    if (auth === 'true') {
-      setIsAuthenticated(true);
+    localStorage.setItem('viewMode', viewMode);
+  }, [viewMode]);
+
+  const loadClients = async () => {
+    setLoadingClients(true);
+    setError(null);
+    try {
+      const controls = await fetchAirtableRecords<ControlFields>(
+        CONTROL_BASE_ID,
+        CONTROL_TABLE_NAME
+      );
+      // Only keep clients with both base and table
+      const validClients = controls
+        .filter(
+          (rec) =>
+            rec.fields.airtableBase &&
+            rec.fields.airtableSMPosts &&
+            rec.fields.Client
+        )
+        .map((rec) => ({
+          id: rec.id,
+          name: rec.fields.Client,
+          baseId: rec.fields.airtableBase!,
+          tableName: rec.fields.airtableSMPosts!,
+          count: 0,
+        }));
+
+      // For each client, fetch count of "Check" status
+      const withCounts = await Promise.all(
+        validClients.map(async (client) => {
+          try {
+            const posts = await fetchAirtableRecords<PostFields>(
+              client.baseId,
+              client.tableName,
+              `Status="Check"`,
+              ["Status"]
+            );
+            return { ...client, count: posts.length };
+          } catch {
+            return { ...client, count: 0 };
+          }
+        })
+      );
+      setClients(withCounts);
+      // Auto-select first client with items to check
+      const firstWithItems = withCounts.find((c) => c.count > 0);
+      setSelectedClientId(firstWithItems?.id ?? null);
+    } catch (e: any) {
+      setError("Failed to load clients. " + e.message);
+    } finally {
+      setLoadingClients(false);
     }
+  };
+
+  // Initial load of clients
+  useEffect(() => {
+    loadClients();
   }, []);
+
+  // Load approval items for selected client
+  useEffect(() => {
+    const loadApprovals = async () => {
+      if (!selectedClientId) {
+        setApprovalItems([]);
+        return;
+      }
+      setLoadingApprovals(true);
+      setError(null);
+      const client = clients.find((c) => c.id === selectedClientId);
+      if (!client) return;
+      try {
+        const posts = await fetchAirtableRecords<PostFields>(
+          client.baseId,
+          client.tableName,
+          `Status="Check"`,
+          ["imageUrls1x1", "imageUrls2x3"]
+        );
+        setApprovalItems(
+          posts.map((rec) => ({
+            id: rec.id,
+            imageUrls1x1: rec.fields.imageUrls1x1,
+            imageUrls2x3: rec.fields.imageUrls2x3,
+          }))
+        );
+      } catch (e: any) {
+        setError("Failed to load approval items. " + e.message);
+        setApprovalItems([]);
+      } finally {
+        setLoadingApprovals(false);
+      }
+    };
+    loadApprovals();
+  }, [selectedClientId, clients]);
+
+  // Handle approval actions
+  const handleAction = async (id: string, action: "Approved" | "Redo" | "Discard") => {
+    const client = clients.find((c) => c.id === selectedClientId);
+    if (!client) return;
+    setActionLoading((prev) => [...prev, id]);
+    setError(null);
+    try {
+      await updateAirtableRecord(client.baseId, client.tableName, id, {
+        Status: action,
+      });
+      setApprovalItems((items) => items.filter((item) => item.id !== id));
+      setClients((prev) =>
+        prev.map((c) =>
+          c.id === client.id ? { ...c, count: c.count - 1 } : c
+        )
+      );
+    } catch (e: any) {
+      setError("Failed to update status. " + e.message);
+    } finally {
+      setActionLoading((prev) => prev.filter((x) => x !== id));
+    }
+  };
 
   const renderToolSelector = () => (
     <div className="text-center">
@@ -100,124 +214,11 @@ function App() {
     </div>
   );
 
-  // 1. Load clients from Controls table
-  useEffect(() => {
-    async function loadClients() {
-      setLoadingClients(true);
-      setError(null);
-      try {
-        const controls = await fetchAirtableRecords<ControlFields>(
-          CONTROL_BASE_ID,
-          CONTROL_TABLE_NAME
-        );
-        // Only keep clients with both base and table
-        const validClients = controls
-          .filter(
-            (rec) =>
-              rec.fields.airtableBase &&
-              rec.fields.airtableSMPosts &&
-              rec.fields.Client
-          )
-          .map((rec) => ({
-            id: rec.id,
-            name: rec.fields.Client,
-            baseId: rec.fields.airtableBase!,
-            tableName: rec.fields.airtableSMPosts!,
-            count: 0,
-          }));
-
-        // For each client, fetch count of "Check" status
-        const withCounts = await Promise.all(
-          validClients.map(async (client) => {
-            try {
-              const posts = await fetchAirtableRecords<PostFields>(
-                client.baseId,
-                client.tableName,
-                `Status="Check"`,
-                ["Status"]
-              );
-              return { ...client, count: posts.length };
-            } catch {
-              return { ...client, count: 0 };
-            }
-          })
-        );
-        setClients(withCounts);
-        // Auto-select first client with items to check
-        const firstWithItems = withCounts.find((c) => c.count > 0);
-        setSelectedClientId(firstWithItems?.id ?? null);
-      } catch (e: any) {
-        setError("Failed to load clients. " + e.message);
-      } finally {
-        setLoadingClients(false);
-      }
-    }
-    loadClients();
-  }, []);
-
-  // 2. Load approval items for selected client
-  useEffect(() => {
-    async function loadApprovals() {
-      if (!selectedClientId) {
-        setApprovalItems([]);
-        return;
-      }
-      setLoadingApprovals(true);
-      setError(null);
-      const client = clients.find((c) => c.id === selectedClientId);
-      if (!client) return;
-      try {
-        const posts = await fetchAirtableRecords<PostFields>(
-          client.baseId,
-          client.tableName,
-          `Status="Check"`,
-          ["imageUrls1x1", "imageUrls2x3"]
-        );
-        setApprovalItems(
-          posts.map((rec) => ({
-            id: rec.id,
-            imageUrls1x1: rec.fields.imageUrls1x1,
-            imageUrls2x3: rec.fields.imageUrls2x3,
-          }))
-        );
-      } catch (e: any) {
-        setError("Failed to load approval items. " + e.message);
-        setApprovalItems([]);
-      } finally {
-        setLoadingApprovals(false);
-      }
-    }
-    loadApprovals();
-  }, [selectedClientId, clients]);
-
-  // 3. Approve/Redo action
-  const handleAction = useCallback(
-    async (id: string, action: "Approved" | "Redo" | "Discard") => {
-      const client = clients.find((c) => c.id === selectedClientId);
-      if (!client) return;
-      setActionLoading((prev) => [...prev, id]);
-      setError(null);
-      try {
-        await updateAirtableRecord(client.baseId, client.tableName, id, {
-          Status: action,
-        });
-        setApprovalItems((items) => items.filter((item) => item.id !== id));
-        setClients((prev) =>
-          prev.map((c) =>
-            c.id === client.id ? { ...c, count: c.count - 1 } : c
-          )
-        );
-      } catch (e: any) {
-        setError("Failed to update status. " + e.message);
-      } finally {
-        setActionLoading((prev) => prev.filter((x) => x !== id));
-      }
-    },
-    [clients, selectedClientId]
-  );
-
   if (!isAuthenticated) {
-    return <PasswordProtection onAuthenticated={() => setIsAuthenticated(true)} />;
+    return <PasswordProtection onAuthenticated={() => {
+      setIsAuthenticated(true);
+      setViewMode('tool-select'); // Reset to home page on new authentication
+    }} />;
   }
 
   return (
@@ -247,8 +248,6 @@ function App() {
             </div>
           </div>
           <div className="flex flex-col items-center">
-            {/* Removed duplicate mobile logo section */}
-
             {/* Error Message */}
             {error && (
               <div className="w-full max-w-[1000px] mx-auto mb-6 px-4 sm:px-0">
@@ -276,6 +275,7 @@ function App() {
                     clients={clients}
                     selectedClientId={selectedClientId}
                     onSelect={setSelectedClientId}
+                    onRefresh={loadClients}
                   />
                 )}
                 {/* Approvals List */}
