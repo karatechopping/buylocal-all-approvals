@@ -7,7 +7,7 @@ interface FeaturedClientProfileProps {
     onRefresh?: () => void;
 }
 
-const EditableContentSection = ({ content, approval, contactData }: any) => {
+const EditableContentSection = ({ content, approval, contactData, onRefresh }: any) => {
     const [isEditing, setIsEditing] = useState(false);
     const [value, setValue] = useState(getFieldValue(content, contactData));
     const [isLoading, setIsLoading] = useState(false);
@@ -105,6 +105,15 @@ const EditableContentSection = ({ content, approval, contactData }: any) => {
                     Approval Status
                 </div>
                 <div className="flex gap-2 flex-wrap">
+                    <button
+                        onClick={onRefresh}
+                        className="h-[38px] px-4 rounded-md text-sm font-medium bg-blue-50 text-blue-500 hover:bg-blue-100 inline-flex items-center"
+                    >
+                        <svg className="mr-1 -ml-0.5" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"/>
+                        </svg>
+                        Refresh
+                    </button>
                     <DisplayField
                         label="Approval Status"
                         value={getFieldValue(approval, contactData)}
@@ -432,7 +441,12 @@ const DisplayField = ({ label, value: initialValue, displayAs, possibleValues, f
     }
 };
 
-export default function FeaturedClientProfile({ contactId, onRefresh }: FeaturedClientProfileProps) {
+import { forwardRef, useImperativeHandle } from 'react';
+
+export default forwardRef(function FeaturedClientProfile(
+    { contactId }: FeaturedClientProfileProps,
+    ref: any
+) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [contactData, setContactData] = useState<any>(null);
@@ -466,6 +480,10 @@ export default function FeaturedClientProfile({ contactId, onRefresh }: Featured
     useEffect(() => {
         fetchContactData();
     }, [contactId]);
+
+    useImperativeHandle(ref, () => ({
+        fetchContactData
+    }));
 
     if (loading) {
         return (
@@ -528,6 +546,7 @@ export default function FeaturedClientProfile({ contactId, onRefresh }: Featured
                                 content={content}
                                 approval={approval}
                                 contactData={contactData}
+                                onRefresh={fetchContactData}
                             />
                         </div>
                     ))}
@@ -575,4 +594,4 @@ export default function FeaturedClientProfile({ contactId, onRefresh }: Featured
             </section>
         </div>
     );
-}
+});

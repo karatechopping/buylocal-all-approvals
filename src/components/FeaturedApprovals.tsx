@@ -1,12 +1,11 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import FeaturedClientSelector from './FeaturedClientSelector';
 import FeaturedClientProfile from './FeaturedClientProfile';
 import { RotateCw } from 'lucide-react';
 
 export default function FeaturedApprovals() {
     const [selectedClientId, setSelectedClientId] = useState<string>('');
-    const [refreshTrigger, setRefreshTrigger] = useState(0);
-    const [profileRefreshTrigger, setProfileRefreshTrigger] = useState(0);
+    const profileRef = useRef<{ fetchContactData?: () => Promise<void> }>({});
 
     // Handle client selection
     const handleClientSelect = (clientId: string) => {
@@ -22,11 +21,10 @@ export default function FeaturedApprovals() {
                         <FeaturedClientSelector
                             selectedClientId={selectedClientId}
                             onSelect={handleClientSelect}
-                            refreshTrigger={refreshTrigger}
                         />
                     </div>
                     <button
-                        onClick={() => setRefreshTrigger(prev => prev + 1)}
+                        onClick={() => location.reload()}
                         className="ml-4 p-2 rounded-lg text-blue-600 hover:bg-blue-50 transition-colors"
                         title="Refresh Featured Clients List"
                     >
@@ -43,7 +41,7 @@ export default function FeaturedApprovals() {
                             Profile Details
                         </h2>
                         <button
-                            onClick={() => setProfileRefreshTrigger(prev => prev + 1)}
+                            onClick={() => profileRef.current.fetchContactData?.()}
                             className="p-2 rounded-lg text-blue-600 hover:bg-blue-50 transition-colors"
                             title="Refresh Profile Data"
                         >
@@ -52,7 +50,7 @@ export default function FeaturedApprovals() {
                     </div>
                     <FeaturedClientProfile 
                         contactId={selectedClientId}
-                        key={profileRefreshTrigger} // This forces a remount when refreshing
+                        ref={profileRef}
                     />
                 </div>
             )}
