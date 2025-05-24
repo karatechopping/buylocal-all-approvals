@@ -5,9 +5,19 @@
   publish = "dist"
   framework = "vite"
   autoLaunch = true
+  envFiles = [".env", ".env.development"] # Specify all env files to load
 
 [functions]
   directory = "netlify/functions"
+  included_files = [".env", ".env.development"]
+  node_bundler = "esbuild"
+
+[build.environment]
+  NODE_ENV = "development"
+
+[dev.environment]
+  PIT = "${VITE_PIT}"
+  VITE_PIT = "${VITE_PIT}"
 
 [[redirects]]
   from = "/*"

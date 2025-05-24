@@ -6,6 +6,7 @@ import {
 import { PasswordProtection } from "./components/PasswordProtection";
 import ClientSelector from "./components/ClientSelector";
 import ApprovalList from "./components/ApprovalList";
+import FeaturedApprovals from "./components/FeaturedApprovals";
 import { Loader2 } from "lucide-react";
 
 const CONTROL_BASE_ID = "apptHiS9luQVH98CQ";
@@ -278,25 +279,29 @@ function App() {
                   />
                 )}
                 {/* Approvals List */}
-                {loadingApprovals ? (
-                  <div className="bg-white rounded-xl shadow-md p-6">
-                    <h2 className="text-xl font-bold mb-4 text-gray-700">
-                      Items to Approve
-                    </h2>
-                    <div className="flex items-center justify-center py-12">
-                      <Loader2 className="animate-spin w-6 h-6 text-blue-400" />
-                      <span className="ml-3 text-blue-700 font-medium">
-                        Loading items...
-                      </span>
-                    </div>
-                  </div>
+                {viewMode === 'featured' ? (
+                  <FeaturedApprovals />
                 ) : (
                   <>
-                    <ApprovalList
-                      items={approvalItems}
-                      onAction={handleAction}
-                      loadingIds={actionLoading}
-                    />
+                    {loadingApprovals ? (
+                      <div className="bg-white rounded-xl shadow-md p-6">
+                        <h2 className="text-xl font-bold mb-4 text-gray-700">
+                          Items to Approve
+                        </h2>
+                        <div className="flex items-center justify-center py-12">
+                          <Loader2 className="animate-spin w-6 h-6 text-blue-400" />
+                          <span className="ml-3 text-blue-700 font-medium">
+                            Loading items...
+                          </span>
+                        </div>
+                      </div>
+                    ) : (
+                      <ApprovalList
+                        items={approvalItems}
+                        onAction={handleAction}
+                        loadingIds={actionLoading}
+                      />
+                    )}
                   </>
                 )}
               </div>
