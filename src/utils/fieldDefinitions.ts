@@ -1,5 +1,5 @@
 import Papa from 'papaparse';
-import csvContent from '../../extra_files/customfields_latest.csv?raw';
+import csvContent from '../../customfields/customfields.csv?raw';
 
 interface CsvRow {
     Type: 'STANDARD' | 'CUSTOM';

@@ -36,7 +36,7 @@ export default function FeaturedClientSelector({
                 'Content-Type': 'application/json'
             }
         });
-        
+
         if (!response.ok) {
             const errorText = await response.text();
             throw new Error(`Failed to fetch featured contacts: ${errorText}`);
@@ -185,11 +185,6 @@ export default function FeaturedClientSelector({
                                                 </span>
                                             </div>
                                             <div className="mt-1 flex items-center gap-3 text-xs text-gray-500">
-                                                {client.email && (
-                                                    <span className="truncate">
-                                                        {client.email}
-                                                    </span>
-                                                )}
                                                 {client.featuredUpgradeDate && (
                                                     <span className="flex items-center">
                                                         <span className="w-1 h-1 rounded-full bg-gray-300 mr-2"></span>
