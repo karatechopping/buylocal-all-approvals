@@ -1,5 +1,6 @@
 import Papa from 'papaparse';
 import csvContent from '../../customfields/customfields.csv?raw';
+import sectionOrderCsvContent from '../../customfields/SectionOrder.csv?raw';
 
 interface CsvRow {
     Type: 'STANDARD' | 'CUSTOM';
@@ -50,50 +51,80 @@ const parsedCsv = Papa.parse(csvContent, {
     skipEmptyLines: true
 });
 
-const csvData = (parsedCsv.data as CsvRow[]).map(row => ({
-    type: row.Type,
-    fieldKey: row.fieldKey,
-    custom_field_id: row.custom_field_id || undefined,
-    name: row.name || row.fieldKey.split('.').pop()?.replace(/_/g, ' ') || undefined,
-    possibleValues: row['Possible Values'] ? row['Possible Values'].split('|') : undefined,
-    approvalFor: row['approval for'] || undefined,
-    displayAs: row['display as'] as FieldDefinition['displayAs'],
-    editable: row.editable === 'EDITABLE',
-    clickableValues: row.clickable ? row.clickable.split('|') : undefined, // Populate clickableValues
-    section: row.Section || 'Other' // Assign section, default to 'Other' if not specified
-})).sort((a, b) => {
-    const sectionOrder = [
-        'Basic Information',
-        'Profile Status',
-        'Final Delivery',
-        'Important Links',
-        'Content Review'
-    ];
-    const aIndex = sectionOrder.indexOf(a.section || 'Other');
-    const bIndex = sectionOrder.indexOf(b.section || 'Other');
-    return aIndex - bIndex;
+// Parse the section order CSV and create sort order map
+const sectionOrderCsv = Papa.parse(sectionOrderCsvContent, {
+    skipEmptyLines: true
 });
 
-// Debug log the processed data
-console.log('Processed fields with editable flag:',
-    csvData.filter(field => field.editable).map(f => ({
-        fieldKey: f.fieldKey,
-        editable: f.editable
-    }))
-);
+const sectionOrderMap: { [key: string]: number } = {};
+const orderedSections: string[] = [];
+
+// Skip the header row and process the remaining rows
+sectionOrderCsv.data.slice(1).forEach((row: any) => {
+    const section = row[0]?.trim(); // First column is Section
+    const sortOrder = parseInt(row[1]?.trim() || '', 10); // Second column is SortOrder
+
+    if (section && !isNaN(sortOrder)) {
+        sectionOrderMap[section] = sortOrder;
+        orderedSections.push(section);
+    }
+});
+
+// Sort the orderedSections array based on their sort orders
+orderedSections.sort((a, b) => sectionOrderMap[a] - sectionOrderMap[b]);
+
+// Debug log to verify section order mapping
+console.log('Section Order Map:', sectionOrderMap);
+console.log('Ordered Sections:', orderedSections);
+
+// Filter out the header row and map the data
+const csvData = (parsedCsv.data as CsvRow[])
+    .filter(row => row.Section !== 'Section') // Remove the header row if it got included
+    .map(row => ({
+        type: row.Type,
+        fieldKey: row.fieldKey,
+        custom_field_id: row.custom_field_id || undefined,
+        name: row.name || row.fieldKey.split('.').pop()?.replace(/_/g, ' ') || undefined,
+        possibleValues: row['Possible Values'] ? row['Possible Values'].split('|') : undefined,
+        approvalFor: row['approval for'] || undefined,
+        displayAs: row['display as'] as FieldDefinition['displayAs'],
+        editable: row.editable === 'EDITABLE',
+        clickableValues: row.clickable ? row.clickable.split('|') : undefined,
+        section: row.Section // Don't default to any section
+    }));
 
 // Structure to hold the final field definitions, grouped by section
 const fieldDefinitions: { [key: string]: (FieldDefinition | { content: FieldDefinition; approval: FieldDefinition })[] } = {};
 
-// Group fields by section
-const sections: { [key: string]: FieldDefinition[] } = csvData.reduce((acc, field) => {
-    const sectionName = field.section || 'Other'; // Use 'Other' if section is undefined
-    if (!acc[sectionName]) {
-        acc[sectionName] = [];
+// First, create empty arrays for each section in the correct order
+orderedSections.forEach(section => {
+    fieldDefinitions[section] = [];
+});
+
+// Group fields by section while maintaining order
+const sections: { [key: string]: FieldDefinition[] } = {};
+orderedSections.forEach(section => {
+    sections[section] = [];
+});
+
+// Check if we have any uncategorised fields
+const uncategorisedFields = csvData.filter(field => !field.section || !sections[field.section]);
+if (uncategorisedFields.length > 0) {
+    sections['Uncategorised'] = [];
+    fieldDefinitions['Uncategorised'] = [];
+}
+
+// Group fields into their sections
+csvData.forEach(field => {
+    if (field.section && sections[field.section]) {
+        sections[field.section].push(field);
+    } else if (uncategorisedFields.length > 0) {
+        sections['Uncategorised'].push(field);
     }
-    acc[sectionName].push(field);
-    return acc;
-}, {} as { [key: string]: FieldDefinition[] });
+});
+
+// Export the section names in order (including Uncategorised if it exists)
+export const sectionNames = [...orderedSections, ...(uncategorisedFields.length > 0 ? ['Uncategorised'] : [])];
 
 // Debug log for sections
 console.log('Sections before pairing:', Object.keys(sections));

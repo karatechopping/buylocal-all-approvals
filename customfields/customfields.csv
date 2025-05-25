@@ -17,21 +17,21 @@ CUSTOM,contact.featured_upgrade_date,E3hX9H8jB9EYovEqS5NM,Featured Upgrade Date,
 CUSTOM,contact.reach_profile_url,tIwQuSBwmxxlPyqKXSCb,Profile URL,,,LINK,EDITABLE,,Final Delivery
 CUSTOM,contact.profile_approval,ujhPrdQuM1pKl1o81YeT,Profile Approval,In Progress|Awaiting Approval|Approved|Re-Do,tIwQuSBwmxxlPyqKXSCb,BUTTONS,,Awaiting Approval|Approved|Re-Do,Final Delivery
 CUSTOM,contact.marketing_audit_report,kDRwSGUn6nVkUMmhvxzE,Audit Report URL,,,LINK,,,Important Links
-CUSTOM,contact.reach_audit_video_url,0gGhjG5PveplslZsiVsT,Audit Video URL,,,LINK,,,Important Links
 CUSTOM,contact.blog_article__from_gpt,UCi2bT4X9VkEDUAdUV0f,Blog Article,,,TEXT,EDITABLE,,Content Review
 CUSTOM,contact.blog_article__approval,nKtxvfFixvLi6YNMt27u,Blog Article - Approval,In Progress|Awaiting Approval|Approved|Re-Do,UCi2bT4X9VkEDUAdUV0f,BUTTONS,,Approved|Re-Do,Content Review
 CUSTOM,contact.blog_article_image_url,Ci6Z7yNpsRAIJqjN1LIr,Blog Image,,,EMBEDDED IMAGE,,,Content Review
 CUSTOM,contact.blog_image__approval,CW0lZ9TpfPkU2kpBMpOv,Blog Image - Approval,In Progress|Awaiting Approval|Approved|Re-Do,Ci6Z7yNpsRAIJqjN1LIr,BUTTONS,,Approved|Re-Do,Content Review
 CUSTOM,contact.content_blog_article,2Y6fCdSqw1QLEADWWZrf,Blog Article URL,,,LINK,,,Important Links
+CUSTOM,contact.promo_video_yt_url,FHtLSa9nBo30UO9wy5nK,Promo Video YT Url,,,LINK,,,Important Links
 CUSTOM,contact.video_script__from_gpt,UHq0ihnYhy7uwByEFzCu,Video Script,,,TEXT,EDITABLE,,Content Review
 CUSTOM,contact.video_script__approval,onCG4ZuFDKxNb0F97zFr,Video Script - Approval,In Progress|Awaiting Approval|Approved|Re-Do,UHq0ihnYhy7uwByEFzCu,BUTTONS,,Approved|Re-Do,Content Review
 CUSTOM,contact.promo_video_url,8kj727p5vOiXDhQ8WK8N,Promo Video,,,EMBEDDED VIDEO,,,Content Review
 CUSTOM,contact.video__approval,lU0sPll3zuVMOfaklcRa,Video - Approval,In Progress|Awaiting Approval|Approved|Re-Do,8kj727p5vOiXDhQ8WK8N,BUTTONS,,Approved|Re-Do,Content Review
 CUSTOM,contact.social_media_prompt,GeyT9xgKMmmS10WgHqCJ,Social Media Prompt,,,TEXT,EDITABLE,,Content Review
 CUSTOM,contact.social_media_approval,SBpBaCpj5jPoG6ouyqpl,Social Media Approval,In Progress|Awaiting Approval|Approved|Re-Do,GeyT9xgKMmmS10WgHqCJ,BUTTONS,,Approved|Re-Do,Content Review
-CUSTOM,contact.all_elements_ready,unr2FWA1Bbf17GyVA2ig,All Elements Ready,Yes|No,,BUTTONS,,Yes|No,Profile Status
-CUSTOM,contact.featured_discovery_complete,w6QGpD7jbjFwlYnuJTzD,Featured Profile DISCOVERY Complete,Yes|No,,BUTTONS,,Yes|No,Profile Status
-CUSTOM,contact.featured_page_complete,YCZuIppjpmR05IfGpnrR,Featured BuyLocal PROFILE PAGE Complete,Yes|No,,BUTTONS,,Yes|No,Profile Status
-CUSTOM,contact.featured_profile_complete,IyD2zCRvoZ28qOMOCHPt,Featured Profile EVERYTHING Complete,Yes|No,,BUTTONS,,Yes|No,Profile Status
+CUSTOM,contact.featured_discovery_complete,w6QGpD7jbjFwlYnuJTzD,Featured Profile DISCOVERY Complete,Yes|No,,BUTTONS,,,Profile Status
+CUSTOM,contact.featured_page_complete,YCZuIppjpmR05IfGpnrR,Featured BuyLocal PROFILE PAGE Complete,Yes|No,,BUTTONS,,,Profile Status
+CUSTOM,contact.all_elements_ready,unr2FWA1Bbf17GyVA2ig,All Elements Ready,Yes|No,,BUTTONS,,,Profile Status
+CUSTOM,contact.featured_profile_complete,IyD2zCRvoZ28qOMOCHPt,Featured Profile EVERYTHING Complete,Yes|No,,BUTTONS,,,Profile Status
 CUSTOM,contact.delivery_page_url,tizMyflcVnad5HNVsQ7B,Delivery Page,,,LINK,,,Final Delivery
-CUSTOM,contact.delivery_page__approval,38OCynyjqxYfhixepiJ0,Delivery Page - Approval,In Progress|Awaiting Approval|Approved|Re-Do,tizMyflcVnad5HNVsQ7B,BUTTONS,,Awaiting Approval|Approved|Re-Do,Final Delivery
+CUSTOM,contact.delivery_page__approval,38OCynyjqxYfhixepiJ0,Delivery Page - Approval,In Progress|Awaiting Approval|Approved|Re-Do,tizMyflcVnad5HNVsQ7B,BUTTONS,,Approved|Re-Do,Final Delivery
