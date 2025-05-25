@@ -83,27 +83,12 @@ export const handler: Handler = async (event) => {
             pageLimit: 100,
             filters: [
                 {
-                    group: "AND",
-                    filters: [
-                        {
-                            field: "customFields.E3hX9H8jB9EYovEqS5NM",
-                            operator: "exists"
-                        },
-                        {
-                            group: "OR",
-                            filters: [
-                                {
-                                    field: "customFields.IyD2zCRvoZ28qOMOCHPt",
-                                    operator: "not_eq",
-                                    value: "Yes"
-                                },
-                                {
-                                    field: "customFields.IyD2zCRvoZ28qOMOCHPt",
-                                    operator: "not_exists"
-                                }
-                            ]
-                        }
-                    ]
+                    field: "customFields.E3hX9H8jB9EYovEqS5NM",
+                    operator: "exists"
+                },
+                {
+                    field: "customFields.featured_upgrade_delivered",
+                    operator: "exists"
                 }
             ],
             sort: [
@@ -144,6 +129,8 @@ export const handler: Handler = async (event) => {
                 contact.email ||
                 'Unknown Contact';
 
+            const featuredUpgradeDelivered = contact.customFields?.find(cf => cf.id === 'vHY7tXnBuD2HvQ1OPZzP')?.value;
+
             return {
                 id: contact.id,
                 name: fullName,
@@ -151,7 +138,8 @@ export const handler: Handler = async (event) => {
                 phone: contact.phone,
                 companyName: contact.companyName || customFields.company_name || customFields['contact.company_name'],
                 featuredUpgradeDate: customFields.featured_upgrade_date || customFields['contact.featured_upgrade_date'],
-                profileComplete: customFields.featured_profile_complete || customFields['contact.featured_profile_complete']
+                profileComplete: customFields.featured_profile_complete || customFields['contact.featured_profile_complete'],
+                featuredUpgradeDelivered: featuredUpgradeDelivered
             };
         });
 

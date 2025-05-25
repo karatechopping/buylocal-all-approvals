@@ -10,6 +10,7 @@ interface GHLContact {
     featuredUpgradeDate?: string;
     profileComplete?: string;
     companyName?: string;
+    featuredUpgradeDelivered?: string;
 }
 
 type FeaturedClientSelectorProps = {
@@ -26,6 +27,8 @@ export default function FeaturedClientSelector({
     const [clients, setClients] = useState<GHLContact[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+
+    console.log('Clients in FeaturedClientSelector:', clients);
 
     const searchFeaturedContacts = async (): Promise<GHLContact[]> => {
         console.log('Fetching featured contacts from Netlify function...');
@@ -177,21 +180,21 @@ export default function FeaturedClientSelector({
                                                     }`}>
                                                     {client.companyName}
                                                 </p>
-                                                <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${selectedClientId === client.id
+                                                <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${client.featuredUpgradeDelivered === 'Yes' ? 'bg-green-100 text-green-600' : selectedClientId === client.id
                                                     ? 'bg-blue-100 text-blue-800'
                                                     : 'bg-orange-100 text-orange-800'
                                                     }`}>
-                                                    Pending Review
+                                                    {client.featuredUpgradeDelivered === 'Yes' ? <><span className="text-green-600">Done</span></> : <><span >Pending Review</span></>}
                                                 </span>
                                             </div>
-                                            <div className="mt-1 flex items-center gap-3 text-xs text-gray-500">
-                                                {client.featuredUpgradeDate && (
-                                                    <span className="flex items-center">
-                                                        <span className="w-1 h-1 rounded-full bg-gray-300 mr-2"></span>
-                                                        Upgraded {new Date(client.featuredUpgradeDate).toLocaleDateString()}
-                                                    </span>
-                                                )}
-                                            </div>
+                                        </div>
+                                        <div className="mt-1 flex items-center gap-3 text-xs text-gray-500">
+                                            {client.featuredUpgradeDate && (
+                                                <span className="flex items-center">
+                                                    <span className="w-1 h-1 rounded-full bg-gray-300 mr-2"></span>
+                                                    Upgraded {new Date(client.featuredUpgradeDate).toLocaleDateString()}
+                                                </span>
+                                            )}
                                         </div>
                                     </div>
                                 </button>

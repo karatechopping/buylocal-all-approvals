@@ -106,6 +106,19 @@ csvData.push({
     section: 'Basic Information'
 });
 
+csvData.push({
+    type: 'CUSTOM',
+    fieldKey: 'featured_upgrade_delivered',
+    custom_field_id: 'YOUR_CUSTOM_FIELD_ID',
+    name: 'Featured Upgrade Delivered',
+    possibleValues: undefined,
+    approvalFor: undefined,
+    displayAs: 'TEXT',
+    editable: false,
+    clickableValues: undefined,
+    section: 'Basic Information'
+});
+
 // Structure to hold the final field definitions, grouped by section
 const fieldDefinitions: { [key: string]: (FieldDefinition | { content: FieldDefinition; approval: FieldDefinition })[] } = {};
 
