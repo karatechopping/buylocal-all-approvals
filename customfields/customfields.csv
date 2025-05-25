@@ -32,7 +32,7 @@ CUSTOM,contact.video__approval,lU0sPll3zuVMOfaklcRa,Video - Approval,In Progress
 CUSTOM,contact.social_media_prompt,GeyT9xgKMmmS10WgHqCJ,Social Media Prompt,,,TEXT,EDITABLE,,Content Review
 CUSTOM,contact.social_media_approval,SBpBaCpj5jPoG6ouyqpl,Social Media Approval,In Progress|Awaiting Approval|Approved|Re-Do,GeyT9xgKMmmS10WgHqCJ,BUTTONS,,Approved|Re-Do,Content Review
 CUSTOM,contact.featured_discovery_complete,w6QGpD7jbjFwlYnuJTzD,Featured Profile DISCOVERY Complete,Yes|No,,BUTTONS,,,Profile Status
-CUSTOM,contact.featured_page_complete,YCZuIppjpmR05IfGpnrR,Featured BuyLocal PROFILE PAGE Complete,Yes|No,,BUTTONS,,,Profile Status
+CUSTOM,contact.featured_audit__profile_complete,tt7EYibb9DTlCTMpm08G,Featured Audit & Profile Complete,Yes|No,,BUTTONS,,,Profile Status
 CUSTOM,contact.all_elements_ready,unr2FWA1Bbf17GyVA2ig,Blog/Video/Social Ready,Yes|No,,BUTTONS,,,Profile Status
 CUSTOM,contact.featured_profile_complete,IyD2zCRvoZ28qOMOCHPt,Featured Profile EVERYTHING Complete,Yes|No,,BUTTONS,,,Profile Status
 CUSTOM,contact.delivery_page_url,tizMyflcVnad5HNVsQ7B,Delivery Page,,,LINK,,,Final Delivery
