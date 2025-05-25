@@ -12,6 +12,7 @@ const EditableContentSection = ({ content, approval, contactData, onRefresh }: a
     const [value, setValue] = useState(getFieldValue(content, contactData));
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const approvalStatus = getFieldValue(approval, contactData);
 
     const handleSave = async () => {
         setIsLoading(true);
@@ -48,21 +49,24 @@ const EditableContentSection = ({ content, approval, contactData, onRefresh }: a
     };
 
     return (
-        <>
+        <details open={approvalStatus !== 'Approved'}>
+            <summary className={`font-semibold flex items-center justify-between ${approvalStatus !== 'Approved' ? 'mb-5' : 'mb-2.5'}`}>
+                {getFieldLabel(content)}
+                <span className={`text-sm ${getFieldValue(approval, contactData) === 'Approved' ? 'text-green-600' : getFieldValue(approval, contactData) === 'Awaiting Approval' ? 'text-orange-600' : 'text-gray-600'}`}>
+                    {getFieldValue(approval, contactData)}
+                </span>
+            </summary>
             <div>
-                <div className="text-sm font-medium text-gray-700 mb-1">
-                    {getFieldLabel(content)}
-                </div>
                 {isEditing ? (
                     <div className="space-y-2">
                         <textarea
                             value={value}
                             onChange={(e) => setValue(e.target.value)}
                             className="w-full p-2 border border-gray-300 rounded-md"
-                            rows={Math.max(5, 
-                                Math.floor(value.split(/\s+/).length / 16) + 
-                                (value.match(/\n/g) || []).length + 
-                                2
+                            rows={Math.max(5,
+                                value ? (Math.floor(value.split(/\s+/).length / 16) +
+                                    (value.match(/\n/g) || []).length +
+                                    2) : 5
                             )}
                             style={{ minHeight: '100px' }}
                         />
@@ -102,15 +106,15 @@ const EditableContentSection = ({ content, approval, contactData, onRefresh }: a
             </div>
             <div>
                 <div className="text-sm font-medium text-gray-700 mb-1">
-                    Approval Status
+                    <div style={{ borderBottom: '1px solid #ccc', width: '100%', marginBottom: '5px' }}></div>
                 </div>
-                <div className="flex gap-2 flex-wrap">
+                <div className="flex gap-2 flex-wrap" style={{ marginTop: '10px' }}>
                     <button
                         onClick={onRefresh}
                         className="h-[38px] px-4 rounded-md text-sm font-medium bg-blue-50 text-blue-500 hover:bg-blue-100 inline-flex items-center"
                     >
                         <svg className="mr-1 -ml-0.5" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"/>
+                            <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3" />
                         </svg>
                         Refresh
                     </button>
@@ -135,7 +139,7 @@ const EditableContentSection = ({ content, approval, contactData, onRefresh }: a
                     )}
                 </div>
             </div>
-        </>
+        </details>
     );
 };
 
@@ -146,28 +150,28 @@ const getStatusButtonStyle = (buttonValue: string, currentValue: string | undefi
 
     switch (buttonValue) {
         case 'In Progress':
-            return `${baseStyles} ${isSelected 
-                ? 'bg-gray-600 text-white' 
+            return `${baseStyles} ${isSelected
+                ? 'bg-gray-600 text-white'
                 : 'bg-gray-50 text-gray-500'}`;
         case 'Awaiting Approval':
-            return `${baseStyles} ${isSelected 
-                ? 'bg-orange-600 text-white' 
+            return `${baseStyles} ${isSelected
+                ? 'bg-orange-600 text-white'
                 : 'bg-orange-50 text-orange-500'}`;
         case 'Approved':
-            return `${baseStyles} ${isSelected 
-                ? 'bg-green-600 text-white' 
+            return `${baseStyles} ${isSelected
+                ? 'bg-green-600 text-white'
                 : 'bg-green-50 text-green-500 hover:bg-green-100'}`;
         case 'Re-Do':
-            return `${baseStyles} ${isSelected 
-                ? 'bg-red-600 text-white' 
+            return `${baseStyles} ${isSelected
+                ? 'bg-red-600 text-white'
                 : 'bg-red-50 text-red-500 hover:bg-red-100'}`;
         case 'Yes':
-            return `${baseStyles} ${isSelected 
-                ? 'bg-green-600 text-white' 
+            return `${baseStyles} ${isSelected
+                ? 'bg-green-600 text-white'
                 : 'bg-green-50 text-green-500 hover:bg-green-100'}`;
         case 'No':
-            return `${baseStyles} ${isSelected 
-                ? 'bg-red-600 text-white' 
+            return `${baseStyles} ${isSelected
+                ? 'bg-red-600 text-white'
                 : 'bg-red-50 text-red-500 hover:bg-red-100'}`;
         case 'EDIT':
             return `${baseStyles} bg-blue-50 text-blue-500 hover:bg-blue-100`;
@@ -202,7 +206,7 @@ const DisplayField = ({ label, value: initialValue, displayAs, possibleValues, f
                 isCustomField: field.type === 'CUSTOM',
                 custom_field_id: field.custom_field_id
             };
-            
+
             console.log('Sending update payload:', payload);
 
             const response = await fetch('/.netlify/functions/update-ghl-record', {
@@ -255,11 +259,11 @@ const DisplayField = ({ label, value: initialValue, displayAs, possibleValues, f
                 return (
                     <div className="mb-4">
                         <div className="whitespace-pre-wrap">
-                            {value.split(markdownLinkRegex).map((part, i) => {
+                            {value.split(markdownLinkRegex).map((part: string, i: number) => {
                                 if (i % 3 === 1) {  // Link text
                                     const url = value.split(markdownLinkRegex)[i + 1];
                                     return (
-                                        <a 
+                                        <a
                                             key={i}
                                             href={url}
                                             target="_blank"
@@ -284,9 +288,9 @@ const DisplayField = ({ label, value: initialValue, displayAs, possibleValues, f
                 if (isImage) {
                     return (
                         <div className="mb-4">
-                            <img 
-                                src={value} 
-                                alt="Content"
+                            <img
+                                src={value}
+                                alt={label}
                                 className="max-w-full h-auto rounded-lg shadow-sm"
                             />
                         </div>
@@ -295,9 +299,9 @@ const DisplayField = ({ label, value: initialValue, displayAs, possibleValues, f
                 return (
                     <div className="mb-4">
                         <div className="whitespace-pre-wrap">
-                            <a 
-                                href={value} 
-                                target="_blank" 
+                            <a
+                                href={value}
+                                target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-blue-600 hover:text-blue-800 hover:underline"
                             >
@@ -318,9 +322,9 @@ const DisplayField = ({ label, value: initialValue, displayAs, possibleValues, f
                                     value={value}
                                     onChange={(e) => setValue(e.target.value)}
                                     className="w-full p-2 border border-gray-300 rounded-md"
-                                    rows={Math.max(5, 
-                                        Math.floor(value.split(/\s+/).length / 16) + 
-                                        (value.match(/\n/g) || []).length + 
+                                    rows={Math.max(5,
+                                        Math.floor(value.split(/\s+/).length / 16) +
+                                        (value.match(/\n/g) || []).length +
                                         2
                                     )}
                                     style={{ minHeight: '100px' }}
@@ -367,9 +371,9 @@ const DisplayField = ({ label, value: initialValue, displayAs, possibleValues, f
         case 'LINK':
             return (
                 <div className="mb-4">
-                    <a 
-                        href={value} 
-                        target="_blank" 
+                    <a
+                        href={value}
+                        target="_blank"
                         rel="noopener noreferrer"
                         className="text-blue-600 hover:text-blue-800 hover:underline"
                     >
@@ -382,8 +386,8 @@ const DisplayField = ({ label, value: initialValue, displayAs, possibleValues, f
             if (!isValidUrl(value)) return <div className="mb-4">Invalid image URL</div>;
             return (
                 <div className="mb-4">
-                    <img 
-                        src={value} 
+                    <img
+                        src={value}
                         alt={label}
                         className="max-w-full h-auto rounded-lg shadow-sm"
                     />
@@ -395,7 +399,7 @@ const DisplayField = ({ label, value: initialValue, displayAs, possibleValues, f
             // Convert URL if it's a YouTube URL
             let embedUrl = value;
             if (value.includes('youtube.com') || value.includes('youtu.be')) {
-                const videoId = value.includes('youtube.com') 
+                const videoId = value.includes('youtube.com')
                     ? value.split('v=')[1]
                     : value.split('youtu.be/')[1];
                 if (videoId) {
@@ -440,11 +444,11 @@ const DisplayField = ({ label, value: initialValue, displayAs, possibleValues, f
                                                     custom_field_id: field.custom_field_id
                                                 })
                                             });
-                                            
+
                                             if (!response.ok) {
                                                 throw new Error('Failed to update status');
                                             }
-                                            
+
                                             // Update local state
                                             setValue(btnValue);
                                         } catch (err) {
@@ -484,7 +488,7 @@ export default forwardRef(function FeaturedClientProfile(
         const scrollPosition = window.scrollY;
         setLoading(true);
         setError(null);
-        
+
         try {
             const response = await fetch('/.netlify/functions/fetch-featured-client-profile', {
                 method: 'POST',
@@ -499,7 +503,7 @@ export default forwardRef(function FeaturedClientProfile(
             const data = await response.json();
             console.log('GHL Response:', data);
             setContactData(data);
-            
+
             // After state updates, restore scroll position
             requestAnimationFrame(() => {
                 window.scrollTo({
@@ -574,13 +578,32 @@ export default forwardRef(function FeaturedClientProfile(
                 </div>
             </section>
 
+            {/* Overall Status */}
+            <section>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Profile Status</h3>
+                <div className="bg-gray-100 p-6 rounded-lg space-y-4">
+                    {fieldDefinitions.status.map((field) => (
+                        <div key={field.fieldKey}>
+                            <div className="text-sm font-medium text-gray-700 mb-1">
+                                {getFieldLabel(field)}
+                            </div>
+                            <DisplayField
+                                value={getFieldValue(field, contactData)}
+                                displayAs={field.displayAs}
+                                possibleValues={field.possibleValues}
+                            />
+                        </div>
+                    ))}
+                </div>
+            </section>
+
             {/* Content Review Section */}
             <section>
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Content Review</h3>
                 <div className="space-y-6">
                     {fieldDefinitions.contentPairs.map(({ content, approval }, index) => (
                         <div key={index} className="bg-gray-100 p-6 rounded-lg space-y-4">
-                            <EditableContentSection 
+                            <EditableContentSection
                                 content={content}
                                 approval={approval}
                                 contactData={contactData}
@@ -612,24 +635,6 @@ export default forwardRef(function FeaturedClientProfile(
                 </div>
             </section>
 
-            {/* Overall Status */}
-            <section>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Profile Status</h3>
-                <div className="bg-gray-100 p-6 rounded-lg space-y-4">
-                    {fieldDefinitions.status.map((field) => (
-                        <div key={field.fieldKey}>
-                            <div className="text-sm font-medium text-gray-700 mb-1">
-                                {getFieldLabel(field)}
-                            </div>
-                            <DisplayField
-                                value={getFieldValue(field, contactData)}
-                                displayAs={field.displayAs}
-                                possibleValues={field.possibleValues}
-                            />
-                        </div>
-                    ))}
-                </div>
-            </section>
         </div>
     );
 });
