@@ -38,3 +38,4 @@ CUSTOM,contact.all_elements_ready,unr2FWA1Bbf17GyVA2ig,Blog/Video/Social Ready,Y
 CUSTOM,contact.featured_profile_complete,IyD2zCRvoZ28qOMOCHPt,Featured Profile EVERYTHING Complete,Yes|No,,BUTTONS,,,Profile Status
 CUSTOM,contact.delivery_page_url,tizMyflcVnad5HNVsQ7B,Delivery Page,,,LINK,,,Final Delivery
 CUSTOM,contact.delivery_page__approval,38OCynyjqxYfhixepiJ0,Delivery Page - Approval,In Progress|Awaiting Approval|Approved|Re-Do,tizMyflcVnad5HNVsQ7B,BUTTONS,,Approved|Re-Do,Final Delivery
+CUSTOM,contact.featured_upgrade_delivered,vHY7tXnBuD2HvQ1OPZzP,contact.featured_upgrade_delivered,Yes|No,,BUTTONS,,,Profile Status
