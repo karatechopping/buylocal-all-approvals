@@ -249,8 +249,37 @@ const DisplayField = ({ label, value: initialValue, displayAs, possibleValues, f
     }
     switch (displayAs) {
         case 'TEXT':
-            // If the text looks like a URL, check if it's an image
-            if (isValidUrl(value)) {
+            // Check for markdown-style links [text](url)
+            const markdownLinkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
+            if (markdownLinkRegex.test(value)) {
+                return (
+                    <div className="mb-4">
+                        <div className="whitespace-pre-wrap">
+                            {value.split(markdownLinkRegex).map((part, i) => {
+                                if (i % 3 === 1) {  // Link text
+                                    const url = value.split(markdownLinkRegex)[i + 1];
+                                    return (
+                                        <a 
+                                            key={i}
+                                            href={url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-blue-600 hover:text-blue-800 hover:underline"
+                                        >
+                                            {part}
+                                        </a>
+                                    );
+                                } else if (i % 3 === 2) {  // URL
+                                    return null;  // Skip the URL as it's used in the link above
+                                }
+                                return part;  // Regular text
+                            })}
+                        </div>
+                    </div>
+                );
+            }
+            // If it's a plain URL, check if it's an image
+            else if (isValidUrl(value)) {
                 const isImage = /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(value);
                 if (isImage) {
                     return (
