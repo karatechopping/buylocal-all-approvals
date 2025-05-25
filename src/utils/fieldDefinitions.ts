@@ -11,6 +11,7 @@ interface CsvRow {
     'display as': 'TEXT' | 'LINK' | 'EMBEDDED IMAGE' | 'EMBEDDED_IMAGE' | 'EMBEDDED VIDEO' | 'EMBEDDED_VIDEO' | 'BUTTONS';
     editable?: string;
     clickable?: string; // Add clickable column
+    Section?: string; // Add Section column
 }
 
 export interface FieldDefinition {
@@ -23,6 +24,7 @@ export interface FieldDefinition {
     displayAs: 'TEXT' | 'LINK' | 'EMBEDDED IMAGE' | 'EMBEDDED_IMAGE' | 'EMBEDDED VIDEO' | 'EMBEDDED_VIDEO' | 'BUTTONS';
     editable?: boolean;
     clickableValues?: string[]; // Add clickableValues property
+    section?: string; // Add section property
 }
 
 interface GHLResponse {
@@ -57,7 +59,8 @@ const csvData = (parsedCsv.data as CsvRow[]).map(row => ({
     approvalFor: row['approval for'] || undefined,
     displayAs: row['display as'] as FieldDefinition['displayAs'],
     editable: row.editable === 'EDITABLE',
-    clickableValues: row.clickable ? row.clickable.split('|') : undefined // Populate clickableValues
+    clickableValues: row.clickable ? row.clickable.split('|') : undefined, // Populate clickableValues
+    section: row.Section || 'Other' // Assign section, default to 'Other' if not specified
 }));
 
 // Debug log the processed data
@@ -68,149 +71,115 @@ console.log('Processed fields with editable flag:',
     }))
 );
 
-// Organize fields into logical groups
-export const fieldDefinitions = {
-    // Basic contact information
-    basicInfo: [
-        'firstName',
-        'lastName',
-        'email',
-        'website',
-        'companyName',
-        'phone',
-        'address1',
-        'city',
-        'country',
-        'contact.primary_business_number',
-        'contact.business_email',
-        'contact.company_email_address',
-        'contact.website',
-        'contact.select_your_region_location',
-        'contact.featured_upgrade_date'
-    ].map(key => {
-        const field = csvData.find(f => f.fieldKey === key);
-        if (!field) {
-            throw new Error(`Field definition not found for key: ${key}`);
-        }
-        return field;
-    }),
+// Structure to hold the final field definitions, grouped by section
+const fieldDefinitions: { [key: string]: (FieldDefinition | { content: FieldDefinition; approval: FieldDefinition })[] } = {};
 
-    // Content that needs approval (pairs of content + approval status)
-    contentPairs: [
-        {
-            content: (() => {
-                const field = csvData.find(f => f.fieldKey === 'contact.blog_article__from_gpt');
-                if (!field) throw new Error('Field definition not found for key: contact.blog_article__from_gpt');
-                return field;
-            })(),
-            approval: (() => {
-                const field = csvData.find(f => f.fieldKey === 'contact.blog_article__approval');
-                if (!field) throw new Error('Field definition not found for key: contact.blog_article__approval');
-                return field;
-            })()
-        },
-        {
-            content: (() => {
-                const field = csvData.find(f => f.fieldKey === 'contact.blog_article_image_url');
-                if (!field) throw new Error('Field definition not found for key: contact.blog_article_image_url');
-                return field;
-            })(),
-            approval: (() => {
-                const field = csvData.find(f => f.fieldKey === 'contact.blog_image__approval');
-                if (!field) throw new Error('Field definition not found for key: contact.blog_image__approval');
-                return field;
-            })()
-        },
-        {
-            content: (() => {
-                const field = csvData.find(f => f.fieldKey === 'contact.video_script__from_gpt');
-                if (!field) throw new Error('Field definition not found for key: contact.video_script__from_gpt');
-                return field;
-            })(),
-            approval: (() => {
-                const field = csvData.find(f => f.fieldKey === 'contact.video_script__approval');
-                if (!field) throw new Error('Field definition not found for key: contact.video_script__approval');
-                return field;
-            })()
-        },
-        {
-            content: (() => {
-                const field = csvData.find(f => f.fieldKey === 'contact.promo_video_url');
-                if (!field) throw new Error('Field definition not found for key: contact.promo_video_url');
-                return field;
-            })(),
-            approval: (() => {
-                const field = csvData.find(f => f.fieldKey === 'contact.video__approval');
-                if (!field) throw new Error('Field definition not found for key: contact.video__approval');
-                return field;
-            })()
-        },
-        {
-            content: (() => {
-                const field = csvData.find(f => f.fieldKey === 'contact.social_media_prompt');
-                if (!field) throw new Error('Field definition not found for key: contact.social_media_prompt');
-                return field;
-            })(),
-            approval: (() => {
-                const field = csvData.find(f => f.fieldKey === 'contact.social_media_approval');
-                if (!field) throw new Error('Field definition not found for key: contact.social_media_approval');
-                return field;
-            })()
-        },
-        {
-            content: (() => {
-                const field = csvData.find(f => f.fieldKey === 'contact.delivery_page_url');
-                if (!field) throw new Error('Field definition not found for key: contact.delivery_page_url');
-                return field;
-            })(),
-            approval: (() => {
-                const field = csvData.find(f => f.fieldKey === 'contact.delivery_page__approval');
-                if (!field) throw new Error('Field definition not found for key: contact.delivery_page__approval');
-                return field;
-            })()
-        },
-        {
-            content: (() => {
-                const field = csvData.find(f => f.fieldKey === 'contact.reach_profile_url');
-                if (!field) throw new Error('Field definition not found for key: contact.reach_profile_url');
-                return field;
-            })(),
-            approval: (() => {
-                const field = csvData.find(f => f.fieldKey === 'contact.profile_approval');
-                if (!field) throw new Error('Field definition not found for key: contact.profile_approval');
-                return field;
-            })()
-        }
-    ],
+// Group fields by section
+const sections: { [key: string]: FieldDefinition[] } = csvData.reduce((acc, field) => {
+    const sectionName = field.section || 'Other'; // Use 'Other' if section is undefined
+    if (!acc[sectionName]) {
+        acc[sectionName] = [];
+    }
+    acc[sectionName].push(field);
+    return acc;
+}, {} as { [key: string]: FieldDefinition[] });
 
-    // Important links
-    links: [
-        'contact.marketing_audit_report',
-        'contact.reach_audit_video_url',
-        'contact.content_blog_article',
-        'contact.delivery_page_url'
-    ].map(key => {
-        const field = csvData.find(f => f.fieldKey === key);
-        if (!field) {
-            throw new Error(`Field definition not found for key: ${key}`);
-        }
-        return field;
-    }),
+// Debug log for sections
+console.log('Sections before pairing:', Object.keys(sections));
+for (const sectionName in sections) {
+    console.log(`Section ${sectionName} has ${sections[sectionName].length} fields`);
+}
 
-    // Overall status indicators
-    status: [
-        'contact.all_elements_ready',
-        'contact.featured_discovery_complete',
-        'contact.featured_page_complete',
-        'contact.featured_profile_complete',
-    ].map(key => {
-        const field = csvData.find(f => f.fieldKey === key);
-        if (!field) {
-            throw new Error(`Field definition not found for key: ${key}`);
+// First, collect all fields across all sections for global lookup
+const allFields = Object.values(sections).flat();
+
+// Create maps for quick lookup
+const fieldsByKey = new Map<string, FieldDefinition>();
+const fieldsByCustomId = new Map<string, FieldDefinition>();
+const approvalFields: FieldDefinition[] = [];
+
+// Populate the maps
+allFields.forEach(field => {
+    fieldsByKey.set(field.fieldKey, field);
+    if (field.custom_field_id) {
+        fieldsByCustomId.set(field.custom_field_id, field);
+    }
+    if (field.approvalFor) {
+        approvalFields.push(field);
+    }
+});
+
+console.log('All fields by key:', Array.from(fieldsByKey.keys()));
+console.log('All fields by custom ID:', Array.from(fieldsByCustomId.keys()));
+
+// Identify content/approval pairs within each section
+for (const sectionName in sections) {
+    const fieldsInSection = sections[sectionName];
+    fieldDefinitions[sectionName] = [];
+
+    // Log fields in this section
+    console.log(`Processing section: ${sectionName}`);
+    console.log(`Fields in section ${sectionName}:`, fieldsInSection.map(f => ({
+        fieldKey: f.fieldKey,
+        custom_field_id: f.custom_field_id,
+        approvalFor: f.approvalFor,
+        displayAs: f.displayAs
+    })));
+
+    // Process fields in this section
+    const processedContentFields = new Set();
+
+    for (const field of fieldsInSection) {
+        if (field.approvalFor) {
+            // This is an approval field
+            // Find the content field by custom_field_id (which is stored in approvalFor)
+            const contentField = fieldsByCustomId.get(field.approvalFor);
+
+            if (contentField) {
+                console.log(`Found content/approval pair: ${contentField.fieldKey} / ${field.fieldKey}`);
+                fieldDefinitions[sectionName].push({
+                    content: contentField,
+                    approval: field
+                });
+                processedContentFields.add(contentField.fieldKey);
+            } else {
+                console.warn(`Approval field ${field.fieldKey} references content field with custom_field_id ${field.approvalFor} which was not found`);
+                fieldDefinitions[sectionName].push(field);
+            }
+        } else if (!processedContentFields.has(field.fieldKey)) {
+            // Check if this content field has an approval field in any section
+            const hasApproval = approvalFields.some(af => af.approvalFor === field.custom_field_id);
+
+            if (!hasApproval) {
+                // No approval field found, add as a regular field
+                fieldDefinitions[sectionName].push(field);
+            }
+            // Skip content fields that have approval fields - they'll be added as pairs
         }
-        return field;
-    })
-};
+    }
+}
+
+// Debug log for final fieldDefinitions
+console.log('Final fieldDefinitions structure:');
+for (const sectionName in fieldDefinitions) {
+    console.log(`Section ${sectionName} has ${fieldDefinitions[sectionName].length} items`);
+    console.log(`Items in section ${sectionName}:`, fieldDefinitions[sectionName].map(item => {
+        if ('content' in item && 'approval' in item) {
+            return {
+                type: 'pair',
+                content: item.content.fieldKey,
+                approval: item.approval.fieldKey
+            };
+        } else {
+            return {
+                type: 'single',
+                fieldKey: (item as FieldDefinition).fieldKey
+            };
+        }
+    }));
+}
+
+export { fieldDefinitions }; // Export the dynamically generated object
 
 export function getFieldValue(field: FieldDefinition, data: GHLResponse): string | undefined {
     if (!field || !data.contact) return undefined;
@@ -235,17 +204,30 @@ export function getFieldLabel(field: FieldDefinition): string {
 
 // Helper function to determine if a field has an approval field
 export function hasApprovalField(field: FieldDefinition): boolean {
-    return fieldDefinitions.contentPairs.some(
-        pair => pair.content.fieldKey === field.fieldKey
-    );
+    // Check if this field is the content field in any pair across all sections
+    for (const sectionName in fieldDefinitions) {
+        const sectionItems = fieldDefinitions[sectionName];
+        for (const item of sectionItems) {
+            if ('content' in item && item.content.fieldKey === field.fieldKey) {
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
 // Helper function to get the approval field for a content field
 export function getApprovalField(field: FieldDefinition): FieldDefinition | undefined {
-    const pair = fieldDefinitions.contentPairs.find(
-        pair => pair.content.fieldKey === field.fieldKey
-    );
-    return pair?.approval;
+    // Find the pair where this field is the content field, across all sections
+    for (const sectionName in fieldDefinitions) {
+        const sectionItems = fieldDefinitions[sectionName];
+        for (const item of sectionItems) {
+            if ('content' in item && item.content.fieldKey === field.fieldKey) {
+                return item.approval;
+            }
+        }
+    }
+    return undefined;
 }
 
 // For debugging

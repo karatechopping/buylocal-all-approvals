@@ -1,37 +1,37 @@
-﻿Type,fieldKey,custom_field_id,name,Possible Values,approval for,display as,editable,clickable
-STANDARD,firstName,,First Name,,,TEXT,,
-STANDARD,lastName,,Last Name,,,TEXT,,
-STANDARD,email,,Email,,,TEXT,,
-STANDARD,website,,Website,,,TEXT,,
-STANDARD,companyName,,Compay Name,,,TEXT,,
-STANDARD,phone,,Phone,,,TEXT,,
-STANDARD,address1,,Address,,,TEXT,,
-STANDARD,city,,City ,,,TEXT,,
-STANDARD,country,,Country,,,TEXT,,
-CUSTOM,contact.primary_business_number,JGEwIvsxVpE5O82qBecR,Primary Business Number,,,TEXT,,
-CUSTOM,contact.business_email,a3NIoUsw34RyBPlWC38C,Business Email,,,TEXT,,
-CUSTOM,contact.company_email_address,m6MqGJBXbbPjpkiQ576y,Company email address,,,TEXT,,
-CUSTOM,contact.website,ykA8ytFm7xS8jhitFnJe,Website.,,,TEXT,,
-CUSTOM,contact.select_your_region_location,XkHlXb78oCFyOlDGlmP8,Buy Local Region,,,TEXT,,
-CUSTOM,contact.featured_upgrade_date,E3hX9H8jB9EYovEqS5NM,Featured Upgrade Date,,,TEXT,,
-CUSTOM,contact.reach_profile_url,tIwQuSBwmxxlPyqKXSCb,Profile URL,,,LINK,EDITABLE,
-CUSTOM,contact.profile_approval,ujhPrdQuM1pKl1o81YeT,Profile Approval,In Progress|Awaiting Approval|Approved|Re-Do,,BUTTONS,,Awaiting Approval|Approved|Re-Do
-CUSTOM,contact.marketing_audit_report,kDRwSGUn6nVkUMmhvxzE,Audit Report URL,,,LINK,,
-CUSTOM,contact.reach_audit_video_url,0gGhjG5PveplslZsiVsT,Audit Video URL,,,LINK,,
-CUSTOM,contact.blog_article__from_gpt,UCi2bT4X9VkEDUAdUV0f,Blog Article,,,TEXT,EDITABLE,
-CUSTOM,contact.blog_article__approval,nKtxvfFixvLi6YNMt27u,Blog Article - Approval,In Progress|Awaiting Approval|Approved|Re-Do,UCi2bT4X9VkEDUAdUV0f,BUTTONS,,Approved|Re-Do
-CUSTOM,contact.blog_article_image_url,Ci6Z7yNpsRAIJqjN1LIr,Blog Image,,,EMBEDDED IMAGE,,
-CUSTOM,contact.blog_image__approval,CW0lZ9TpfPkU2kpBMpOv,Blog Image - Approval,In Progress|Awaiting Approval|Approved|Re-Do,Ci6Z7yNpsRAIJqjN1LIr,BUTTONS,,Approved|Re-Do
-CUSTOM,contact.content_blog_article,2Y6fCdSqw1QLEADWWZrf,Blog Article URL,,,LINK,,
-CUSTOM,contact.video_script__from_gpt,UHq0ihnYhy7uwByEFzCu,Video Script,,,TEXT,EDITABLE,
-CUSTOM,contact.video_script__approval,onCG4ZuFDKxNb0F97zFr,Video Script - Approval,In Progress|Awaiting Approval|Approved|Re-Do,UHq0ihnYhy7uwByEFzCu,BUTTONS,,Approved|Re-Do
-CUSTOM,contact.promo_video_url,8kj727p5vOiXDhQ8WK8N,Promo Video,,,EMBEDDED VIDEO,,
-CUSTOM,contact.video__approval,lU0sPll3zuVMOfaklcRa,Video - Approval,In Progress|Awaiting Approval|Approved|Re-Do,8kj727p5vOiXDhQ8WK8N,BUTTONS,,Approved|Re-Do
-CUSTOM,contact.social_media_prompt,GeyT9xgKMmmS10WgHqCJ,Social Media Prompt,,,TEXT,EDITABLE,
-CUSTOM,contact.social_media_approval,SBpBaCpj5jPoG6ouyqpl,Social Media Approval,In Progress|Awaiting Approval|Approved|Re-Do,GeyT9xgKMmmS10WgHqCJ,BUTTONS,,Approved|Re-Do
-CUSTOM,contact.all_elements_ready,unr2FWA1Bbf17GyVA2ig,All Elements Ready,Yes|No,,BUTTONS,,Yes|No
-CUSTOM,contact.featured_discovery_complete,w6QGpD7jbjFwlYnuJTzD,Featured Profile DISCOVERY Complete,Yes|No,,BUTTONS,,Yes|No
-CUSTOM,contact.featured_page_complete,YCZuIppjpmR05IfGpnrR,Featured BuyLocal PROFILE PAGE Complete,Yes|No,,BUTTONS,,Yes|No
-CUSTOM,contact.featured_profile_complete,IyD2zCRvoZ28qOMOCHPt,Featured Profile EVERYTHING Complete,Yes|No,,BUTTONS,,Yes|No
-CUSTOM,contact.delivery_page_url,tizMyflcVnad5HNVsQ7B,Delivery Page,,,LINK,,
-CUSTOM,contact.delivery_page__approval,38OCynyjqxYfhixepiJ0,Delivery Page - Approval,In Progress|Awaiting Approval|Approved|Re-Do,tizMyflcVnad5HNVsQ7B,BUTTONS,,Awaiting Approval|Approved|Re-Do
+﻿Type,fieldKey,custom_field_id,name,Possible Values,approval for,display as,editable,clickable,Section
+STANDARD,firstName,,First Name,,,TEXT,,,Basic Information
+STANDARD,lastName,,Last Name,,,TEXT,,,Basic Information
+STANDARD,email,,Email,,,TEXT,,,Basic Information
+STANDARD,website,,Website,,,TEXT,,,Basic Information
+STANDARD,companyName,,Compay Name,,,TEXT,,,Basic Information
+STANDARD,phone,,Phone,,,TEXT,,,Basic Information
+STANDARD,address1,,Address,,,TEXT,,,Basic Information
+STANDARD,city,,City ,,,TEXT,,,Basic Information
+STANDARD,country,,Country,,,TEXT,,,Basic Information
+CUSTOM,contact.primary_business_number,JGEwIvsxVpE5O82qBecR,Primary Business Number,,,TEXT,,,Basic Information
+CUSTOM,contact.business_email,a3NIoUsw34RyBPlWC38C,Business Email,,,TEXT,,,Basic Information
+CUSTOM,contact.company_email_address,m6MqGJBXbbPkiQ576y,Company email address,,,TEXT,,,Basic Information
+CUSTOM,contact.website,ykA8ytFm7xS8jhitFnJe,Website.,,,TEXT,,,Basic Information
+CUSTOM,contact.select_your_region_location,XkHlXb78oCFyOlDGlmP8,Buy Local Region,,,TEXT,,,Basic Information
+CUSTOM,contact.featured_upgrade_date,E3hX9H8jB9EYovEqS5NM,Featured Upgrade Date,,,TEXT,,,Basic Information
+CUSTOM,contact.reach_profile_url,tIwQuSBwmxxlPyqKXSCb,Profile URL,,,LINK,EDITABLE,,Final Delivery
+CUSTOM,contact.profile_approval,ujhPrdQuM1pKl1o81YeT,Profile Approval,In Progress|Awaiting Approval|Approved|Re-Do,tIwQuSBwmxxlPyqKXSCb,BUTTONS,,Awaiting Approval|Approved|Re-Do,Final Delivery
+CUSTOM,contact.marketing_audit_report,kDRwSGUn6nVkUMmhvxzE,Audit Report URL,,,LINK,,,Important Links
+CUSTOM,contact.reach_audit_video_url,0gGhjG5PveplslZsiVsT,Audit Video URL,,,LINK,,,Important Links
+CUSTOM,contact.blog_article__from_gpt,UCi2bT4X9VkEDUAdUV0f,Blog Article,,,TEXT,EDITABLE,,Content Review
+CUSTOM,contact.blog_article__approval,nKtxvfFixvLi6YNMt27u,Blog Article - Approval,In Progress|Awaiting Approval|Approved|Re-Do,UCi2bT4X9VkEDUAdUV0f,BUTTONS,,Approved|Re-Do,Content Review
+CUSTOM,contact.blog_article_image_url,Ci6Z7yNpsRAIJqjN1LIr,Blog Image,,,EMBEDDED IMAGE,,,Content Review
+CUSTOM,contact.blog_image__approval,CW0lZ9TpfPkU2kpBMpOv,Blog Image - Approval,In Progress|Awaiting Approval|Approved|Re-Do,Ci6Z7yNpsRAIJqjN1LIr,BUTTONS,,Approved|Re-Do,Content Review
+CUSTOM,contact.content_blog_article,2Y6fCdSqw1QLEADWWZrf,Blog Article URL,,,LINK,,,Important Links
+CUSTOM,contact.video_script__from_gpt,UHq0ihnYhy7uwByEFzCu,Video Script,,,TEXT,EDITABLE,,Content Review
+CUSTOM,contact.video_script__approval,onCG4ZuFDKxNb0F97zFr,Video Script - Approval,In Progress|Awaiting Approval|Approved|Re-Do,UHq0ihnYhy7uwByEFzCu,BUTTONS,,Approved|Re-Do,Content Review
+CUSTOM,contact.promo_video_url,8kj727p5vOiXDhQ8WK8N,Promo Video,,,EMBEDDED VIDEO,,,Content Review
+CUSTOM,contact.video__approval,lU0sPll3zuVMOfaklcRa,Video - Approval,In Progress|Awaiting Approval|Approved|Re-Do,8kj727p5vOiXDhQ8WK8N,BUTTONS,,Approved|Re-Do,Content Review
+CUSTOM,contact.social_media_prompt,GeyT9xgKMmmS10WgHqCJ,Social Media Prompt,,,TEXT,EDITABLE,,Content Review
+CUSTOM,contact.social_media_approval,SBpBaCpj5jPoG6ouyqpl,Social Media Approval,In Progress|Awaiting Approval|Approved|Re-Do,GeyT9xgKMmmS10WgHqCJ,BUTTONS,,Approved|Re-Do,Content Review
+CUSTOM,contact.all_elements_ready,unr2FWA1Bbf17GyVA2ig,All Elements Ready,Yes|No,,BUTTONS,,Yes|No,Profile Status
+CUSTOM,contact.featured_discovery_complete,w6QGpD7jbjFwlYnuJTzD,Featured Profile DISCOVERY Complete,Yes|No,,BUTTONS,,Yes|No,Profile Status
+CUSTOM,contact.featured_page_complete,YCZuIppjpmR05IfGpnrR,Featured BuyLocal PROFILE PAGE Complete,Yes|No,,BUTTONS,,Yes|No,Profile Status
+CUSTOM,contact.featured_profile_complete,IyD2zCRvoZ28qOMOCHPt,Featured Profile EVERYTHING Complete,Yes|No,,BUTTONS,,Yes|No,Profile Status
+CUSTOM,contact.delivery_page_url,tizMyflcVnad5HNVsQ7B,Delivery Page,,,LINK,,,Final Delivery
+CUSTOM,contact.delivery_page__approval,38OCynyjqxYfhixepiJ0,Delivery Page - Approval,In Progress|Awaiting Approval|Approved|Re-Do,tizMyflcVnad5HNVsQ7B,BUTTONS,,Awaiting Approval|Approved|Re-Do,Final Delivery

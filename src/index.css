@@ -16,3 +16,47 @@ body,
 details[open] .details-arrow {
   transform: rotate(90deg);
 }
+
+/* Fix for details/summary accordion styling */
+details {
+  width: 100%;
+  margin-bottom: 1rem;
+  border-radius: 0.375rem;
+  overflow: hidden;
+  display: block;
+  /* Ensure details element is displayed as block */
+}
+
+details summary {
+  padding: 0.75rem;
+  cursor: pointer;
+  position: relative;
+  list-style: none;
+  display: flex;
+  /* Ensure flex layout works */
+  align-items: center;
+  justify-content: space-between;
+}
+
+details summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Ensure content inside details is properly displayed */
+details>div {
+  padding: 0.75rem;
+}
+
+/* Ensure buttons in DisplayField are visible */
+details .flex.gap-2.flex-wrap button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0.25rem;
+}
+
+/* Fix for grid layout issues with accordions */
+.space-y-4>details {
+  width: 100%;
+  display: block;
+}

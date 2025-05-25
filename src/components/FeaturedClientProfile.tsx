@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { fieldDefinitions, getFieldValue, getFieldLabel } from '../utils/fieldDefinitions';
+import { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
+import { fieldDefinitions, getFieldValue, getFieldLabel, FieldDefinition } from '../utils/fieldDefinitions';
 import { Loader2 } from 'lucide-react';
 
 interface FeaturedClientProfileProps {
@@ -7,8 +7,10 @@ interface FeaturedClientProfileProps {
     onRefresh?: () => void;
 }
 
+// Simplified version of EditableContentSection that doesn't use details/summary
 const EditableContentSection = ({ content, approval, contactData, onRefresh }: any) => {
     const [isEditing, setIsEditing] = useState(false);
+    const [isExpanded, setIsExpanded] = useState(true); // Start expanded
     const [value, setValue] = useState(getFieldValue(content, contactData));
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -49,102 +51,113 @@ const EditableContentSection = ({ content, approval, contactData, onRefresh }: a
     };
 
     return (
-        <details open={approvalStatus !== 'Approved'}>
-            <summary className={`font-semibold flex items-center justify-between cursor-pointer list-none ${approvalStatus !== 'Approved' ? 'mb-5' : 'mb-2.5'}`}>
+        <div className="border border-gray-200 rounded-lg mb-4 overflow-hidden bg-white">
+            <div
+                className="p-3 bg-gray-50 flex items-center justify-between cursor-pointer"
+                onClick={() => setIsExpanded(!isExpanded)}
+            >
                 <div className="flex items-center">
-                    {getFieldLabel(content)}
-                    <svg className="ml-2 w-4 h-4 transform transition-transform duration-200 details-arrow" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <span className="font-semibold">{getFieldLabel(content)}</span>
+                    <svg
+                        className={`ml-2 w-4 h-4 transform transition-transform duration-200 ${isExpanded ? 'rotate-90' : ''}`}
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                    >
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
                 </div>
-                <span className={`text-sm ${getFieldValue(approval, contactData) === 'Approved' ? 'text-green-600' : getFieldValue(approval, contactData) === 'Awaiting Approval' ? 'text-orange-600' : 'text-gray-600'}`}>
-                    {getFieldValue(approval, contactData)}
+                <span className={`text-sm ${approvalStatus === 'Approved' ? 'text-green-600' : approvalStatus === 'Awaiting Approval' ? 'text-orange-600' : 'text-gray-600'}`}>
+                    {approvalStatus}
                 </span>
-            </summary>
-            <div>
-                {isEditing ? (
-                    <div className="space-y-2">
-                        <textarea
-                            value={value}
-                            onChange={(e) => setValue(e.target.value)}
-                            className="w-full p-2 border border-gray-300 rounded-md"
-                            rows={Math.max(5,
-                                value ? (Math.floor(value.split(/\s+/).length / 16) +
-                                    (value.match(/\n/g) || []).length +
-                                    2) : 5
-                            )}
-                            style={{ minHeight: '100px' }}
-                        />
-                        {error && (
-                            <div className="text-red-600 text-sm">{error}</div>
+            </div>
+
+            {isExpanded && (
+                <>
+                    <div className="p-4">
+                        {isEditing ? (
+                            <div className="space-y-2">
+                                <textarea
+                                    value={value}
+                                    onChange={(e) => setValue(e.target.value)}
+                                    className="w-full p-2 border border-gray-300 rounded-md"
+                                    rows={Math.max(5,
+                                        value ? (Math.floor(value.split(/\s+/).length / 16) +
+                                            (value.match(/\n/g) || []).length +
+                                            2) : 5
+                                    )}
+                                    style={{ minHeight: '100px' }}
+                                />
+                                {error && (
+                                    <div className="text-red-600 text-sm">{error}</div>
+                                )}
+                                <div className="flex gap-2">
+                                    <button
+                                        onClick={handleSave}
+                                        disabled={isLoading}
+                                        className="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+                                    >
+                                        {isLoading ? 'Saving...' : 'Save'}</button>
+                                    <button
+                                        onClick={() => {
+                                            setIsEditing(false);
+                                            setValue(getFieldValue(content, contactData));
+                                            setError(null);
+                                        }}
+                                        disabled={isLoading}
+                                        className="px-3 py-1 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
+                                    >
+                                        Cancel</button>
+                                </div>
+                            </div>
+                        ) : (
+                            <DisplayField
+                                label={getFieldLabel(content)}
+                                value={value}
+                                displayAs={content.displayAs}
+                                field={content}
+                                contactId={contactData.contact.id}
+                            />
                         )}
-                        <div className="flex gap-2">
+                    </div>
+
+                    <div className="px-4 pb-4 pt-2 border-t border-gray-100">
+                        <div className="flex gap-2 flex-wrap">
                             <button
-                                onClick={handleSave}
-                                disabled={isLoading}
-                                className="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+                                onClick={onRefresh}
+                                className="h-[38px] px-4 rounded-md text-sm font-medium bg-blue-50 text-blue-500 hover:bg-blue-100 inline-flex items-center"
                             >
-                                {isLoading ? 'Saving...' : 'Save'}
+                                <svg className="mr-1 -ml-0.5" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3" />
+                                </svg>
+                                Refresh
                             </button>
-                            <button
-                                onClick={() => {
-                                    setIsEditing(false);
-                                    setValue(getFieldValue(content, contactData));
-                                    setError(null);
-                                }}
-                                disabled={isLoading}
-                                className="px-3 py-1 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
-                            >
-                                Cancel
-                            </button>
+
+                            <DisplayField
+                                label="Approval Status"
+                                value={getFieldValue(approval, contactData)}
+                                displayAs="BUTTONS"
+                                possibleValues={approval.possibleValues || ['In Progress', 'Awaiting Approval', 'Approved', 'Re-Do']}
+                                field={approval}
+                                contactId={contactData.contact.id}
+                            />
+
+                            {content.editable && !isEditing && (
+                                <button
+                                    onClick={() => setIsEditing(true)}
+                                    className="h-[38px] px-4 rounded-md text-sm font-medium bg-blue-50 text-blue-500 hover:bg-blue-100 inline-flex items-center"
+                                >
+                                    <svg className="mr-1 -ml-0.5" xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+                                    </svg>
+                                    Edit
+                                </button>
+                            )}
                         </div>
                     </div>
-                ) : (
-                    <DisplayField
-                        label={getFieldLabel(content)}
-                        value={value}
-                        displayAs={content.displayAs}
-                        field={content}
-                        contactId={contactData.contact.id}
-                    />
-                )}
-            </div>
-            <div>
-                <div className="text-sm font-medium text-gray-700 mb-1">
-                    <div style={{ borderBottom: '1px solid #ccc', width: '100%', marginBottom: '5px' }}></div>
-                </div>
-                <div className="flex gap-2 flex-wrap" style={{ marginTop: '10px' }}>
-                    <button
-                        onClick={onRefresh}
-                        className="h-[38px] px-4 rounded-md text-sm font-medium bg-blue-50 text-blue-500 hover:bg-blue-100 inline-flex items-center"
-                    >
-                        <svg className="mr-1 -ml-0.5" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3" />
-                        </svg>
-                        Refresh
-                    </button>
-                    <DisplayField
-                        label="Approval Status"
-                        value={getFieldValue(approval, contactData)}
-                        displayAs={approval.displayAs}
-                        possibleValues={approval.possibleValues}
-                        field={approval}
-                        contactId={contactData.contact.id}
-                    />
-                    {content.editable && !isEditing && (
-                        <button
-                            onClick={() => setIsEditing(true)}
-                            className="h-[38px] px-4 rounded-md text-sm font-medium bg-blue-50 text-blue-500 hover:bg-blue-100 inline-flex items-center"
-                        >
-                            <svg className="mr-1 -ml-0.5" xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
-                            </svg>
-                            Edit
-                        </button>
-                    )}
-                </div>
-            </div>
-        </details>
+                </>
+            )}
+        </div>
     );
 };
 
@@ -229,8 +242,6 @@ const DisplayField = ({ label, value: initialValue, displayAs, possibleValues, f
                 custom_field_id: field.custom_field_id
             };
 
-            console.log('Sending update payload:', payload);
-
             const response = await fetch('/.netlify/functions/update-ghl-record', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -238,7 +249,6 @@ const DisplayField = ({ label, value: initialValue, displayAs, possibleValues, f
             });
 
             const data = await response.json();
-            console.log('Update response:', data);
 
             if (!response.ok) {
                 throw new Error(data.error || 'Failed to update field');
@@ -360,8 +370,7 @@ const DisplayField = ({ label, value: initialValue, displayAs, possibleValues, f
                                         disabled={isLoading}
                                         className="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
                                     >
-                                        {isLoading ? 'Saving...' : 'Save'}
-                                    </button>
+                                        {isLoading ? 'Saving...' : 'Save'}</button>
                                     <button
                                         onClick={() => {
                                             setIsEditing(false);
@@ -371,8 +380,7 @@ const DisplayField = ({ label, value: initialValue, displayAs, possibleValues, f
                                         disabled={isLoading}
                                         className="px-3 py-1 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
                                     >
-                                        Cancel
-                                    </button>
+                                        Cancel</button>
                                 </div>
                             </div>
                         ) : (
@@ -448,9 +456,9 @@ const DisplayField = ({ label, value: initialValue, displayAs, possibleValues, f
             return (
                 <div className="mb-4">
                     <div className="flex gap-2 flex-wrap">
-                        {possibleValues?.map((btnValue: string) => {
-                            // Check if the button value is in the clickableValues array
+                        {possibleValues.map((btnValue: string) => {
                             const isActionable = field.clickableValues?.includes(btnValue);
+
                             return (
                                 <button
                                     key={btnValue}
@@ -472,7 +480,6 @@ const DisplayField = ({ label, value: initialValue, displayAs, possibleValues, f
                                                 throw new Error('Failed to update status');
                                             }
 
-                                            // Update local state
                                             setValue(btnValue);
                                         } catch (err) {
                                             console.error('Error updating status:', err);
@@ -496,8 +503,6 @@ const DisplayField = ({ label, value: initialValue, displayAs, possibleValues, f
             );
     }
 };
-
-import { forwardRef, useImperativeHandle } from 'react';
 
 export default forwardRef(function FeaturedClientProfile(
     { contactId }: FeaturedClientProfileProps,
@@ -524,10 +529,8 @@ export default forwardRef(function FeaturedClientProfile(
             }
 
             const data = await response.json();
-            console.log('GHL Response:', data);
             setContactData(data);
 
-            // After state updates, restore scroll position
             requestAnimationFrame(() => {
                 window.scrollTo({
                     top: scrollPosition,
@@ -579,86 +582,43 @@ export default forwardRef(function FeaturedClientProfile(
 
     return (
         <div className="space-y-8">
-            {/* Basic Information */}
-            <section>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Basic Information</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-100 p-6 rounded-lg">
-                    {fieldDefinitions.basicInfo.map((field) => (
-                        <div key={field.fieldKey}>
-                            <div className="text-sm font-medium text-gray-700 mb-1">
-                                {getFieldLabel(field)}
-                            </div>
-                            <DisplayField
-                                label={getFieldLabel(field)}
-                                value={getFieldValue(field, contactData)}
-                                displayAs={field.displayAs}
-                                possibleValues={field.possibleValues}
-                                field={field}
-                                contactId={contactData.contact.id}
-                            />
-                        </div>
-                    ))}
-                </div>
-            </section>
-
-            {/* Overall Status */}
-            <section>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Profile Status</h3>
-                <div className="bg-gray-100 p-6 rounded-lg space-y-4">
-                    {fieldDefinitions.status.map((field) => (
-                        <div key={field.fieldKey}>
-                            <div className="text-sm font-medium text-gray-700 mb-1">
-                                {getFieldLabel(field)}
-                            </div>
-                            <DisplayField
-                                value={getFieldValue(field, contactData)}
-                                displayAs={field.displayAs}
-                                possibleValues={field.possibleValues}
-                                field={field} // Add the missing field prop
-                            />
-                        </div>
-                    ))}
-                </div>
-            </section>
-
-            {/* Important Links */}
-            <section>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Important Links</h3>
-                <div className="bg-gray-100 p-6 rounded-lg space-y-4">
-                    {fieldDefinitions.links.map((field) => (
-                        <div key={field.fieldKey}>
-                            <div className="text-sm font-medium text-gray-700 mb-1">
-                                {getFieldLabel(field)}
-                            </div>
-                            <DisplayField
-                                label={getFieldLabel(field)}
-                                value={getFieldValue(field, contactData)}
-                                displayAs={field.displayAs}
-                                field={field}
-                                contactId={contactData.contact.id}
-                            />
-                        </div>
-                    ))}
-                </div>
-            </section>
-
-            {/* Content Review Section */}
-            <section>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Content Review</h3>
-                <div className="space-y-6">
-                    {fieldDefinitions.contentPairs.map(({ content, approval }, index) => (
-                        <div key={index} className="bg-gray-100 p-6 rounded-lg space-y-4">
-                            <EditableContentSection
-                                content={content}
-                                approval={approval}
-                                contactData={contactData}
-                                onRefresh={fetchContactData}
-                            />
-                        </div>
-                    ))}
-                </div>
-            </section>
-
+            {Object.entries(fieldDefinitions).map(([sectionName, fields]) => (
+                <section key={sectionName}>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">{sectionName}</h3>
+                    <div className={`bg-gray-100 p-6 rounded-lg ${sectionName === 'Basic Information' && !fields.some(item => 'content' in item && 'approval' in item) ? 'grid grid-cols-1 md:grid-cols-2 gap-4' : 'space-y-4'}`}>
+                        {fields.map((item, index) => {
+                            if ('content' in item && 'approval' in item) {
+                                return (
+                                    <EditableContentSection
+                                        key={index}
+                                        content={item.content}
+                                        approval={item.approval}
+                                        contactData={contactData}
+                                        onRefresh={fetchContactData}
+                                    />
+                                );
+                            } else {
+                                const field = item as FieldDefinition;
+                                return (
+                                    <div key={field.fieldKey}>
+                                        <div className="text-sm font-medium text-gray-700 mb-1">
+                                            {getFieldLabel(field)}
+                                        </div>
+                                        <DisplayField
+                                            label={getFieldLabel(field)}
+                                            value={getFieldValue(field, contactData)}
+                                            displayAs={field.displayAs}
+                                            possibleValues={field.possibleValues}
+                                            field={field}
+                                            contactId={contactData.contact.id}
+                                        />
+                                    </div>
+                                );
+                            }
+                        })}
+                    </div>
+                </section>
+            ))}
         </div>
     );
 });
