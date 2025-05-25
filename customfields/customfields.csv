@@ -17,6 +17,7 @@ CUSTOM,contact.featured_upgrade_date,E3hX9H8jB9EYovEqS5NM,Featured Upgrade Date,
 CUSTOM,contact.reach_profile_url,tIwQuSBwmxxlPyqKXSCb,Profile URL,,,LINK,EDITABLE,,Final Delivery
 CUSTOM,contact.profile_approval,ujhPrdQuM1pKl1o81YeT,Profile Approval,In Progress|Awaiting Approval|Approved|Re-Do,tIwQuSBwmxxlPyqKXSCb,BUTTONS,,Awaiting Approval|Approved|Re-Do,Final Delivery
 CUSTOM,contact.marketing_audit_report,kDRwSGUn6nVkUMmhvxzE,Audit Report URL,,,LINK,EDITABLE,,Final Delivery
+CUSTOM,contact.audit_approval,aG0U4adea6Thk5kqSNlw,Audit Approval,In Progress|Awaiting Approval|Approved,kDRwSGUn6nVkUMmhvxzE,BUTTONS,,Awaiting Approval|Approved,Content Review
 CUSTOM,contact.blog_article__from_gpt,UCi2bT4X9VkEDUAdUV0f,Blog Article,,,TEXT,EDITABLE,,Content Review
 CUSTOM,contact.blog_article__approval,nKtxvfFixvLi6YNMt27u,Blog Article - Approval,In Progress|Awaiting Approval|Approved|Re-Do,UCi2bT4X9VkEDUAdUV0f,BUTTONS,,Approved|Re-Do,Content Review
 CUSTOM,contact.blog_article_image_url,Ci6Z7yNpsRAIJqjN1LIr,Blog Image,,,EMBEDDED IMAGE,,,Content Review
