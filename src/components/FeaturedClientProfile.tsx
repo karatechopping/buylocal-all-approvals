@@ -50,8 +50,13 @@ const EditableContentSection = ({ content, approval, contactData, onRefresh }: a
 
     return (
         <details open={approvalStatus !== 'Approved'}>
-            <summary className={`font-semibold flex items-center justify-between ${approvalStatus !== 'Approved' ? 'mb-5' : 'mb-2.5'}`}>
-                {getFieldLabel(content)}
+            <summary className={`font-semibold flex items-center justify-between cursor-pointer list-none ${approvalStatus !== 'Approved' ? 'mb-5' : 'mb-2.5'}`}>
+                <div className="flex items-center">
+                    {getFieldLabel(content)}
+                    <svg className="ml-2 w-4 h-4 transform transition-transform duration-200 details-arrow" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                </div>
                 <span className={`text-sm ${getFieldValue(approval, contactData) === 'Approved' ? 'text-green-600' : getFieldValue(approval, contactData) === 'Awaiting Approval' ? 'text-orange-600' : 'text-gray-600'}`}>
                     {getFieldValue(approval, contactData)}
                 </span>
@@ -145,39 +150,50 @@ const EditableContentSection = ({ content, approval, contactData, onRefresh }: a
 
 const baseStyles = "px-4 py-2 rounded-md text-sm font-medium transition-colors";
 
-const getStatusButtonStyle = (buttonValue: string, currentValue: string | undefined) => {
+const getStatusButtonStyle = (buttonValue: string, currentValue: string | undefined, isActionable: boolean) => {
     const isSelected = buttonValue === (currentValue || 'No'); // Default to 'No' if null
+
+    let style = baseStyles;
 
     switch (buttonValue) {
         case 'In Progress':
-            return `${baseStyles} ${isSelected
-                ? 'bg-gray-600 text-white'
-                : 'bg-gray-50 text-gray-500'}`;
+            style += ` ${isSelected ? 'bg-gray-600 text-white' : 'bg-gray-50 text-gray-500'}`;
+            if (isActionable) style += ' hover:bg-gray-200'; // Slightly more noticeable hover
+            break;
         case 'Awaiting Approval':
-            return `${baseStyles} ${isSelected
-                ? 'bg-orange-600 text-white'
-                : 'bg-orange-50 text-orange-500'}`;
+            style += ` ${isSelected ? 'bg-orange-600 text-white' : 'bg-orange-50 text-orange-500'}`;
+            if (isActionable) style += ' hover:bg-orange-200'; // Slightly more noticeable hover
+            break;
         case 'Approved':
-            return `${baseStyles} ${isSelected
-                ? 'bg-green-600 text-white'
-                : 'bg-green-50 text-green-500 hover:bg-green-100'}`;
+            style += ` ${isSelected ? 'bg-green-600 text-white' : 'bg-green-50 text-green-500'}`;
+            if (isActionable) style += ' hover:bg-green-200'; // Slightly more noticeable hover
+            break;
         case 'Re-Do':
-            return `${baseStyles} ${isSelected
-                ? 'bg-red-600 text-white'
-                : 'bg-red-50 text-red-500 hover:bg-red-100'}`;
+            style += ` ${isSelected ? 'bg-red-600 text-white' : 'bg-red-50 text-red-500'}`;
+            if (isActionable) style += ' hover:bg-red-200'; // Slightly more noticeable hover
+            break;
         case 'Yes':
-            return `${baseStyles} ${isSelected
+            style += `${baseStyles} ${isSelected
                 ? 'bg-green-600 text-white'
-                : 'bg-green-50 text-green-500 hover:bg-green-100'}`;
+                : 'bg-green-50 text-green-500'}`;
+            if (isActionable) style += ' hover:bg-green-200'; // Slightly more noticeable hover
+            break;
         case 'No':
-            return `${baseStyles} ${isSelected
+            style += `${baseStyles} ${isSelected
                 ? 'bg-red-600 text-white'
-                : 'bg-red-50 text-red-500 hover:bg-red-100'}`;
+                : 'bg-red-50 text-red-500'}`;
+            if (isActionable) style += ' hover:bg-red-200'; // Slightly more noticeable hover
+            break;
         case 'EDIT':
-            return `${baseStyles} bg-blue-50 text-blue-500 hover:bg-blue-100`;
+            style += `${baseStyles} bg-blue-50 text-blue-500`;
+            if (isActionable) style += ' hover:bg-blue-200'; // Slightly more noticeable hover
+            break;
         default:
-            return baseStyles;
+            style += baseStyles;
+            break;
     }
+
+    return style;
 };
 
 const isValidUrl = (str: string) => {
@@ -190,6 +206,12 @@ const isValidUrl = (str: string) => {
 };
 
 const DisplayField = ({ label, value: initialValue, displayAs, possibleValues, field, contactId }: any) => {
+    // Add a check for undefined field
+    if (!field) {
+        console.error("DisplayField received undefined field prop");
+        return null; // Or render a placeholder/error message
+    }
+
     const [isEditing, setIsEditing] = useState(false);
     const [value, setValue] = useState(initialValue);
     const [isLoading, setIsLoading] = useState(false);
@@ -427,7 +449,8 @@ const DisplayField = ({ label, value: initialValue, displayAs, possibleValues, f
                 <div className="mb-4">
                     <div className="flex gap-2 flex-wrap">
                         {possibleValues?.map((btnValue: string) => {
-                            const isActionable = btnValue === 'Approved' || btnValue === 'Re-Do';
+                            // Check if the button value is in the clickableValues array
+                            const isActionable = field.clickableValues?.includes(btnValue);
                             return (
                                 <button
                                     key={btnValue}
@@ -455,7 +478,7 @@ const DisplayField = ({ label, value: initialValue, displayAs, possibleValues, f
                                             console.error('Error updating status:', err);
                                         }
                                     } : undefined}
-                                    className={`${getStatusButtonStyle(btnValue, value)} ${!isActionable && 'cursor-default'}`}
+                                    className={`${getStatusButtonStyle(btnValue, value, isActionable)} ${!isActionable && 'cursor-default'}`}
                                 >
                                     {btnValue}
                                 </button>
@@ -591,23 +614,7 @@ export default forwardRef(function FeaturedClientProfile(
                                 value={getFieldValue(field, contactData)}
                                 displayAs={field.displayAs}
                                 possibleValues={field.possibleValues}
-                            />
-                        </div>
-                    ))}
-                </div>
-            </section>
-
-            {/* Content Review Section */}
-            <section>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Content Review</h3>
-                <div className="space-y-6">
-                    {fieldDefinitions.contentPairs.map(({ content, approval }, index) => (
-                        <div key={index} className="bg-gray-100 p-6 rounded-lg space-y-4">
-                            <EditableContentSection
-                                content={content}
-                                approval={approval}
-                                contactData={contactData}
-                                onRefresh={fetchContactData}
+                                field={field} // Add the missing field prop
                             />
                         </div>
                     ))}
@@ -629,6 +636,23 @@ export default forwardRef(function FeaturedClientProfile(
                                 displayAs={field.displayAs}
                                 field={field}
                                 contactId={contactData.contact.id}
+                            />
+                        </div>
+                    ))}
+                </div>
+            </section>
+
+            {/* Content Review Section */}
+            <section>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Content Review</h3>
+                <div className="space-y-6">
+                    {fieldDefinitions.contentPairs.map(({ content, approval }, index) => (
+                        <div key={index} className="bg-gray-100 p-6 rounded-lg space-y-4">
+                            <EditableContentSection
+                                content={content}
+                                approval={approval}
+                                contactData={contactData}
+                                onRefresh={fetchContactData}
                             />
                         </div>
                     ))}

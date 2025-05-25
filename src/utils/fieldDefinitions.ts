@@ -1,6 +1,18 @@
 import Papa from 'papaparse';
 import csvContent from '../../extra_files/customfields_latest.csv?raw';
 
+interface CsvRow {
+    Type: 'STANDARD' | 'CUSTOM';
+    fieldKey: string;
+    custom_field_id?: string;
+    name?: string;
+    'Possible Values'?: string;
+    'approval for'?: string;
+    'display as': 'TEXT' | 'LINK' | 'EMBEDDED IMAGE' | 'EMBEDDED_IMAGE' | 'EMBEDDED VIDEO' | 'EMBEDDED_VIDEO' | 'BUTTONS';
+    editable?: string;
+    clickable?: string; // Add clickable column
+}
+
 export interface FieldDefinition {
     type: 'STANDARD' | 'CUSTOM';
     fieldKey: string;
@@ -10,6 +22,7 @@ export interface FieldDefinition {
     approvalFor?: string;
     displayAs: 'TEXT' | 'LINK' | 'EMBEDDED IMAGE' | 'EMBEDDED_IMAGE' | 'EMBEDDED VIDEO' | 'EMBEDDED_VIDEO' | 'BUTTONS';
     editable?: boolean;
+    clickableValues?: string[]; // Add clickableValues property
 }
 
 interface GHLResponse {
@@ -35,19 +48,20 @@ const parsedCsv = Papa.parse(csvContent, {
     skipEmptyLines: true
 });
 
-const csvData = parsedCsv.data.map(row => ({
-    type: row.Type as 'STANDARD' | 'CUSTOM',
+const csvData = (parsedCsv.data as CsvRow[]).map(row => ({
+    type: row.Type,
     fieldKey: row.fieldKey,
     custom_field_id: row.custom_field_id || undefined,
     name: row.name || row.fieldKey.split('.').pop()?.replace(/_/g, ' ') || undefined,
     possibleValues: row['Possible Values'] ? row['Possible Values'].split('|') : undefined,
     approvalFor: row['approval for'] || undefined,
     displayAs: row['display as'] as FieldDefinition['displayAs'],
-    editable: row.editable === 'EDITABLE'
+    editable: row.editable === 'EDITABLE',
+    clickableValues: row.clickable ? row.clickable.split('|') : undefined // Populate clickableValues
 }));
 
 // Debug log the processed data
-console.log('Processed fields with editable flag:', 
+console.log('Processed fields with editable flag:',
     csvData.filter(field => field.editable).map(f => ({
         fieldKey: f.fieldKey,
         editable: f.editable
@@ -73,53 +87,134 @@ export const fieldDefinitions = {
         'contact.website',
         'contact.select_your_region_location',
         'contact.featured_upgrade_date'
-    ].map(key => csvData.find(field => field.fieldKey === key)!),
+    ].map(key => {
+        const field = csvData.find(f => f.fieldKey === key);
+        if (!field) {
+            throw new Error(`Field definition not found for key: ${key}`);
+        }
+        return field;
+    }),
 
     // Content that needs approval (pairs of content + approval status)
     contentPairs: [
         {
-            content: csvData.find(field => field.fieldKey === 'contact.blog_article__from_gpt')!,
-            approval: csvData.find(field => field.fieldKey === 'contact.blog_article__approval')!
+            content: (() => {
+                const field = csvData.find(f => f.fieldKey === 'contact.blog_article__from_gpt');
+                if (!field) throw new Error('Field definition not found for key: contact.blog_article__from_gpt');
+                return field;
+            })(),
+            approval: (() => {
+                const field = csvData.find(f => f.fieldKey === 'contact.blog_article__approval');
+                if (!field) throw new Error('Field definition not found for key: contact.blog_article__approval');
+                return field;
+            })()
         },
         {
-            content: csvData.find(field => field.fieldKey === 'contact.blog_article_image_url')!,
-            approval: csvData.find(field => field.fieldKey === 'contact.blog_image__approval')!
+            content: (() => {
+                const field = csvData.find(f => f.fieldKey === 'contact.blog_article_image_url');
+                if (!field) throw new Error('Field definition not found for key: contact.blog_article_image_url');
+                return field;
+            })(),
+            approval: (() => {
+                const field = csvData.find(f => f.fieldKey === 'contact.blog_image__approval');
+                if (!field) throw new Error('Field definition not found for key: contact.blog_image__approval');
+                return field;
+            })()
         },
         {
-            content: csvData.find(field => field.fieldKey === 'contact.video_script__from_gpt')!,
-            approval: csvData.find(field => field.fieldKey === 'contact.video_script__approval')!
+            content: (() => {
+                const field = csvData.find(f => f.fieldKey === 'contact.video_script__from_gpt');
+                if (!field) throw new Error('Field definition not found for key: contact.video_script__from_gpt');
+                return field;
+            })(),
+            approval: (() => {
+                const field = csvData.find(f => f.fieldKey === 'contact.video_script__approval');
+                if (!field) throw new Error('Field definition not found for key: contact.video_script__approval');
+                return field;
+            })()
         },
         {
-            content: csvData.find(field => field.fieldKey === 'contact.promo_video_url')!,
-            approval: csvData.find(field => field.fieldKey === 'contact.video__approval')!
+            content: (() => {
+                const field = csvData.find(f => f.fieldKey === 'contact.promo_video_url');
+                if (!field) throw new Error('Field definition not found for key: contact.promo_video_url');
+                return field;
+            })(),
+            approval: (() => {
+                const field = csvData.find(f => f.fieldKey === 'contact.video__approval');
+                if (!field) throw new Error('Field definition not found for key: contact.video__approval');
+                return field;
+            })()
         },
         {
-            content: csvData.find(field => field.fieldKey === 'contact.social_media_prompt')!,
-            approval: csvData.find(field => field.fieldKey === 'contact.social_media_approval')!
+            content: (() => {
+                const field = csvData.find(f => f.fieldKey === 'contact.social_media_prompt');
+                if (!field) throw new Error('Field definition not found for key: contact.social_media_prompt');
+                return field;
+            })(),
+            approval: (() => {
+                const field = csvData.find(f => f.fieldKey === 'contact.social_media_approval');
+                if (!field) throw new Error('Field definition not found for key: contact.social_media_approval');
+                return field;
+            })()
+        },
+        {
+            content: (() => {
+                const field = csvData.find(f => f.fieldKey === 'contact.delivery_page_url');
+                if (!field) throw new Error('Field definition not found for key: contact.delivery_page_url');
+                return field;
+            })(),
+            approval: (() => {
+                const field = csvData.find(f => f.fieldKey === 'contact.delivery_page__approval');
+                if (!field) throw new Error('Field definition not found for key: contact.delivery_page__approval');
+                return field;
+            })()
+        },
+        {
+            content: (() => {
+                const field = csvData.find(f => f.fieldKey === 'contact.reach_profile_url');
+                if (!field) throw new Error('Field definition not found for key: contact.reach_profile_url');
+                return field;
+            })(),
+            approval: (() => {
+                const field = csvData.find(f => f.fieldKey === 'contact.profile_approval');
+                if (!field) throw new Error('Field definition not found for key: contact.profile_approval');
+                return field;
+            })()
         }
     ],
 
     // Important links
     links: [
-        'contact.reach_profile_url',
         'contact.marketing_audit_report',
         'contact.reach_audit_video_url',
         'contact.content_blog_article',
         'contact.delivery_page_url'
-    ].map(key => csvData.find(field => field.fieldKey === key)!),
+    ].map(key => {
+        const field = csvData.find(f => f.fieldKey === key);
+        if (!field) {
+            throw new Error(`Field definition not found for key: ${key}`);
+        }
+        return field;
+    }),
 
     // Overall status indicators
     status: [
         'contact.all_elements_ready',
         'contact.featured_discovery_complete',
         'contact.featured_page_complete',
-        'contact.featured_profile_complete'
-    ].map(key => csvData.find(field => field.fieldKey === key)!)
+        'contact.featured_profile_complete',
+    ].map(key => {
+        const field = csvData.find(f => f.fieldKey === key);
+        if (!field) {
+            throw new Error(`Field definition not found for key: ${key}`);
+        }
+        return field;
+    })
 };
 
 export function getFieldValue(field: FieldDefinition, data: GHLResponse): string | undefined {
     if (!field || !data.contact) return undefined;
-    
+
     if (field.type === 'STANDARD') {
         // Standard fields are direct properties of the contact object
         return data.contact[field.fieldKey];
