@@ -61,7 +61,18 @@ const csvData = (parsedCsv.data as CsvRow[]).map(row => ({
     editable: row.editable === 'EDITABLE',
     clickableValues: row.clickable ? row.clickable.split('|') : undefined, // Populate clickableValues
     section: row.Section || 'Other' // Assign section, default to 'Other' if not specified
-}));
+})).sort((a, b) => {
+    const sectionOrder = [
+        'Basic Information',
+        'Profile Status',
+        'Final Delivery',
+        'Important Links',
+        'Content Review'
+    ];
+    const aIndex = sectionOrder.indexOf(a.section || 'Other');
+    const bIndex = sectionOrder.indexOf(b.section || 'Other');
+    return aIndex - bIndex;
+});
 
 // Debug log the processed data
 console.log('Processed fields with editable flag:',

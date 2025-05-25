@@ -16,6 +16,12 @@ const EditableContentSection = ({ content, approval, contactData, onRefresh }: a
     const [error, setError] = useState<string | null>(null);
     const approvalStatus = getFieldValue(approval, contactData);
 
+    useEffect(() => {
+        if (approvalStatus === 'Approved') {
+            setIsExpanded(false);
+        }
+    }, [approvalStatus]);
+
     const handleSave = async () => {
         setIsLoading(true);
         setError(null);
