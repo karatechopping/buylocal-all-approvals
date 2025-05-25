@@ -23,6 +23,7 @@ CUSTOM,contact.blog_article_image_url,Ci6Z7yNpsRAIJqjN1LIr,Blog Image,,,EMBEDDED
 CUSTOM,contact.blog_image__approval,CW0lZ9TpfPkU2kpBMpOv,Blog Image - Approval,In Progress|Awaiting Approval|Approved|Re-Do,Ci6Z7yNpsRAIJqjN1LIr,BUTTONS,,Approved|Re-Do,Content Review
 CUSTOM,contact.content_blog_article,2Y6fCdSqw1QLEADWWZrf,Blog Article URL,,,LINK,,,Important Links
 CUSTOM,contact.facebook_url__blog_post,18CdjIamqxERApJI1m4i,Blog Post on FB,,,LINK,,,Important Links
+CUSTOM,contact.facebook_url__video_post,WDHAhhErx2t30XUbZJ1K,Video on FB,,,LINK,,,Important Links
 CUSTOM,contact.promo_video_yt_url,FHtLSa9nBo30UO9wy5nK,Promo Video YT Url,,,LINK,,,Important Links
 CUSTOM,contact.video_script__from_gpt,UHq0ihnYhy7uwByEFzCu,Video Script,,,TEXT,EDITABLE,,Content Review
 CUSTOM,contact.video_script__approval,onCG4ZuFDKxNb0F97zFr,Video Script - Approval,In Progress|Awaiting Approval|Approved|Re-Do,UHq0ihnYhy7uwByEFzCu,BUTTONS,,Approved|Re-Do,Content Review
