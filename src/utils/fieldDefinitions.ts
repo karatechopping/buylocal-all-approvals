@@ -93,6 +93,19 @@ const csvData = (parsedCsv.data as CsvRow[])
         section: row.Section // Don't default to any section
     }));
 
+csvData.push({
+    type: 'CUSTOM',
+    fieldKey: 'ghlLink',
+    custom_field_id: 'ghlLink',
+    name: 'GHL Link',
+    possibleValues: undefined,
+    approvalFor: undefined,
+    displayAs: 'LINK',
+    editable: false,
+    clickableValues: undefined,
+    section: 'Basic Information'
+});
+
 // Structure to hold the final field definitions, grouped by section
 const fieldDefinitions: { [key: string]: (FieldDefinition | { content: FieldDefinition; approval: FieldDefinition })[] } = {};
 

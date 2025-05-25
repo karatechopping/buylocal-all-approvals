@@ -373,6 +373,8 @@ const FeaturedClientProfile = forwardRef(function FeaturedClientProfile(
                 }
             });
         }
+        const isGhlLink = field.fieldKey === 'ghlLink' && typeof initialValue === 'object' && initialValue.url && initialValue.text;
+
         switch (displayAs) {
             case 'TEXT':
                 // Check for markdown-style links [text](url)
@@ -491,14 +493,25 @@ const FeaturedClientProfile = forwardRef(function FeaturedClientProfile(
             case 'LINK':
                 return (
                     <div className="mb-4">
-                        <a
-                            href={value}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-blue-600 hover:text-blue-800 hover:underline"
-                        >
-                            {value}
-                        </a>
+                        {isGhlLink ? (
+                            <a
+                                href={initialValue.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-600 hover:text-blue-800 hover:underline"
+                            >
+                                {initialValue.text}
+                            </a>
+                        ) : (
+                            <a
+                                href={value}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-600 hover:text-blue-800 hover:underline"
+                            >
+                                {value}
+                            </a>
+                        )}
                     </div>
                 );
 
@@ -622,7 +635,7 @@ const FeaturedClientProfile = forwardRef(function FeaturedClientProfile(
                                             </div>
                                             <DisplayField
                                                 label={getFieldLabel(field)}
-                                                value={getFieldValue(field, contactData)}
+                                                value={field.fieldKey === 'ghlLink' ? { url: `https://app.yalldigital.com/v2/location/78wsQgsv80W793JIIrOA/contacts/detail/${contactData.contact.id}`, text: 'Click Here' } : getFieldValue(field, contactData)}
                                                 displayAs={field.displayAs}
                                                 possibleValues={field.possibleValues}
                                                 field={field}
