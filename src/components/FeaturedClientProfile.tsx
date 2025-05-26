@@ -181,7 +181,7 @@ const FeaturedClientProfile = forwardRef(function FeaturedClientProfile(
                                     {error && (
                                         <div className="text-red-600 text-sm">{error}</div>
                                     )}
-                                    <div className="flex gap-2">
+                                    <div className="flex gap-2 flex-wrap">
                                         <button
                                             onClick={handleSave}
                                             disabled={isLoading}
@@ -221,7 +221,7 @@ const FeaturedClientProfile = forwardRef(function FeaturedClientProfile(
                                     field={approval}
                                     contactId={contactData.contact.id}
                                 />
-                                <div className="flex gap-2">
+                                <div className="flex gap-2 flex-wrap">
                                     {content.editable && !isEditing && (
                                         <button
                                             onClick={() => setIsEditing(true)}
@@ -253,7 +253,7 @@ const FeaturedClientProfile = forwardRef(function FeaturedClientProfile(
         );
     };
 
-    const baseStyles = "h-10 rounded-md inline-flex items-center justify-center transition-colors w-10 md:w-auto md:px-3";
+    const baseStyles = "h-10 rounded-md inline-flex items-center justify-center transition-colors w-10 md:w-auto px-3";
 
     const getStatusButtonStyle = (buttonValue: string, currentValue: string | undefined, isActionable: boolean) => {
         const isSelected = buttonValue === (currentValue || 'No'); // Default to 'No' if null
