@@ -176,11 +176,14 @@ export default function FeaturedClientSelector({
                             {inProgressClients.map((client) => (
                                 <button
                                     key={client.id}
-                                    onClick={() => onSelect(client.id)}
                                     className={`w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors duration-150 ${selectedClientId === client.id
                                         ? 'bg-blue-50'
                                         : ''
                                         }`}
+                                    onClick={() => {
+                                        onSelect(client.id);
+                                        setSelectedDoneClient(null);
+                                    }}
                                 >
                                     <div className="flex items-center justify-between">
                                         <div className="flex-1 min-w-0">
