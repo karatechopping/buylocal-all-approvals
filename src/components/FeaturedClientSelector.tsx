@@ -27,6 +27,10 @@ export default function FeaturedClientSelector({
     const [clients, setClients] = useState<GHLContact[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [showDone, setShowDone] = useState(false);
+
+    const inProgressClients = clients.filter(client => client.featuredUpgradeDelivered !== 'Yes');
+    const doneClients = clients.filter(client => client.featuredUpgradeDelivered === 'Yes');
 
     console.log('Clients in FeaturedClientSelector:', clients);
 
@@ -152,7 +156,7 @@ export default function FeaturedClientSelector({
                 </div>
 
                 <div className="max-h-72 overflow-y-auto border rounded-lg">
-                    {clients.length === 0 ? (
+                    {inProgressClients.length === 0 ? (
                         <div className="p-8 text-center">
                             <Building2 className="h-12 w-12 text-gray-300 mx-auto mb-4" />
                             <p className="text-gray-500">No featured clients found</p>
@@ -162,7 +166,7 @@ export default function FeaturedClientSelector({
                         </div>
                     ) : (
                         <div className="divide-y divide-gray-100">
-                            {clients.map((client) => (
+                            {inProgressClients.map((client) => (
                                 <button
                                     key={client.id}
                                     onClick={() => onSelect(client.id)}
@@ -185,6 +189,75 @@ export default function FeaturedClientSelector({
                                                     : 'bg-orange-100 text-orange-800'
                                                     }`}>
                                                     {client.featuredUpgradeDelivered === 'Yes' ? <><span className="text-green-600">Done</span></> : <><span >Pending Review</span></>}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div className="mt-1 flex items-center gap-3 text-xs text-gray-500">
+                                            {client.featuredUpgradeDate && (
+                                                <span className="flex items-center">
+                                                    <span className="w-1 h-1 rounded-full bg-gray-300 mr-2"></span>
+                                                    Upgraded {new Date(client.featuredUpgradeDate).toLocaleDateString()}
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
+                                </button>
+                            ))}
+                        </div>
+                    )}
+                </div>
+
+                <button
+                    onClick={() => setShowDone(!showDone)}
+                    className="w-full text-left py-2 px-4 bg-gray-50 hover:bg-gray-100 rounded-md transition-colors duration-150"
+                >
+                    <div className="flex items-center justify-between">
+                        <h3 className="text-sm font-medium text-gray-700">
+                            Completed Profiles ({doneClients.length})
+                        </h3>
+                        <svg
+                            className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${showDone ? 'rotate-180' : ''}`}
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                </button>
+
+                <div className={`max-h-72 overflow-y-auto border rounded-lg mt-2 transition-all duration-300 ease-in-out ${showDone ? 'block' : 'hidden'}`}>
+                    {doneClients.length === 0 ? (
+                        <div className="p-8 text-center">
+                            <Building2 className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+                            <p className="text-gray-500">No completed featured clients found</p>
+                        </div>
+                    ) : (
+                        <div className="divide-y divide-gray-100">
+                            {doneClients.map((client) => (
+                                <button
+                                    key={client.id}
+                                    onClick={() => onSelect(client.id)}
+                                    className={`w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors duration-150 ${selectedClientId === client.id
+                                        ? 'bg-blue-50'
+                                        : ''
+                                        }`}
+                                >
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-2">
+                                                <p className={`text-sm font-medium truncate ${selectedClientId === client.id
+                                                    ? 'text-blue-900'
+                                                    : 'text-gray-900'
+                                                    }`}>
+                                                    {client.companyName}
+                                                </p>
+                                                <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${selectedClientId === client.id
+                                                    ? 'bg-blue-100 text-blue-800'
+                                                    : 'bg-green-100 text-green-600'
+                                                    }`}>
+                                                    <span className="text-green-600">Done</span>
                                                 </span>
                                             </div>
                                         </div>

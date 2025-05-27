@@ -83,7 +83,7 @@ export const handler: Handler = async (event) => {
             pageLimit: 100,
             filters: [
                 {
-                    field: "customFields.E3hX9H8jB9EYovEqS5NM",
+                    field: "customFields.featured_upgrade_date",
                     operator: "exists"
                 },
                 {
