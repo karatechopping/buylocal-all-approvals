@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Building2, AlertCircle } from 'lucide-react';
 
 // Our normalized contact type after processing the API response
@@ -28,9 +28,16 @@ export default function FeaturedClientSelector({
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [showDone, setShowDone] = useState(false);
+    const [selectedDoneClient, setSelectedDoneClient] = useState<GHLContact | null>(null);
 
-    const inProgressClients = clients.filter(client => client.featuredUpgradeDelivered !== 'Yes');
-    const doneClients = clients.filter(client => client.featuredUpgradeDelivered === 'Yes');
+    const inProgressClients = clients.filter((client) => client.featuredUpgradeDelivered !== 'Yes');
+    const doneClients = clients.filter((client) => client.featuredUpgradeDelivered === 'Yes');
+
+    const handleSelectDoneClient = useCallback((client: GHLContact) => {
+        onSelect(client.id);
+        setShowDone(false);
+        setSelectedDoneClient(client);
+    }, [onSelect, setShowDone, setSelectedDoneClient]);
 
     console.log('Clients in FeaturedClientSelector:', clients);
 
@@ -207,25 +214,27 @@ export default function FeaturedClientSelector({
                     )}
                 </div>
 
-                <button
-                    onClick={() => setShowDone(!showDone)}
-                    className="w-full text-left py-2 px-4 bg-gray-50 hover:bg-gray-100 rounded-md transition-colors duration-150"
-                >
-                    <div className="flex items-center justify-between">
-                        <h3 className="text-sm font-medium text-gray-700">
-                            Completed Profiles ({doneClients.length})
-                        </h3>
-                        <svg
-                            className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${showDone ? 'rotate-180' : ''}`}
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg"
-                        >
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
-                        </svg>
-                    </div>
-                </button>
+                <div className="mt-4 border rounded-lg">
+                    <button
+                        onClick={() => setShowDone(!showDone)}
+                        className="w-full text-left py-2 px-4 bg-gray-50 hover:bg-gray-100 rounded-md transition-colors duration-150"
+                    >
+                        <div className="flex items-center justify-between">
+                            <h3 className="text-sm font-medium text-gray-700">
+                                Completed Upgrades ({doneClients.length})
+                            </h3>
+                            <svg
+                                className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${showDone ? 'rotate-90' : ''}`}
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </div>
+                    </button>
+                </div>
 
                 <div className={`max-h-72 overflow-y-auto border rounded-lg mt-2 transition-all duration-300 ease-in-out ${showDone ? 'block' : 'hidden'}`}>
                     {doneClients.length === 0 ? (
@@ -238,7 +247,7 @@ export default function FeaturedClientSelector({
                             {doneClients.map((client) => (
                                 <button
                                     key={client.id}
-                                    onClick={() => onSelect(client.id)}
+                                    onClick={() => handleSelectDoneClient(client)}
                                     className={`w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors duration-150 ${selectedClientId === client.id
                                         ? 'bg-blue-50'
                                         : ''
@@ -279,9 +288,24 @@ export default function FeaturedClientSelector({
         );
     };
 
+    const renderSelectedDoneClient = () => {
+        if (!selectedDoneClient) {
+            return null;
+        }
+
+        return (
+            <div className="mt-4 border rounded-lg p-4">
+                <p className="text-sm font-medium text-gray-900">
+                    Selected: {selectedDoneClient.companyName}
+                </p>
+            </div>
+        );
+    };
+
     return (
         <div>
             {renderContent()}
+            {renderSelectedDoneClient()}
         </div>
     );
 }
