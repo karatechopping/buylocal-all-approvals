@@ -16,6 +16,7 @@ interface ControlFields {
   Client: string;
   airtableBase?: string;
   airtableSMPosts?: string;
+  locationId?: string;
 }
 
 interface PostFields {
@@ -29,6 +30,7 @@ type Client = {
   name: string;
   baseId: string;
   tableName: string;
+  locationId?: string;
   count: number;
   approvedCount: number;
 };
@@ -70,7 +72,9 @@ function App() {
     try {
       const controls = await fetchAirtableRecords<ControlFields>(
         CONTROL_BASE_ID,
-        CONTROL_TABLE_NAME
+        CONTROL_TABLE_NAME,
+        undefined,
+        ["Client", "airtableBase", "airtableSMPosts", "locationId"]
       );
       // Only keep clients with both base and table
       const validClients = controls
@@ -85,6 +89,7 @@ function App() {
           name: rec.fields.Client,
           baseId: rec.fields.airtableBase!,
           tableName: rec.fields.airtableSMPosts!,
+          locationId: rec.fields.locationId,
           count: 0,
         }));
 
