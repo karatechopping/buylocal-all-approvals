@@ -30,6 +30,7 @@ type Client = {
   baseId: string;
   tableName: string;
   count: number;
+  approvedCount: number;
 };
 
 type ApprovalItem = {
@@ -42,10 +43,10 @@ type ViewMode = 'tool-select' | 'social' | 'featured';
 
 function App() {
   // Changed this line to check sessionStorage on initial load
-  const [isAuthenticated, setIsAuthenticated] = useState(() => 
+  const [isAuthenticated, setIsAuthenticated] = useState(() =>
     sessionStorage.getItem('isAuthenticated') === 'true'
   );
-  
+
   const [viewMode, setViewMode] = useState<ViewMode>(() => {
     const savedMode = localStorage.getItem('viewMode');
     return (savedMode as ViewMode) || 'tool-select';
@@ -97,13 +98,19 @@ function App() {
               `Status="Check"`,
               ["Status"]
             );
-            return { ...client, count: posts.length };
+            const approvedPosts = await fetchAirtableRecords<PostFields>(
+              client.baseId,
+              client.tableName,
+              `Status="Approved"`,
+              ["Status"]
+            );
+            return { ...client, count: posts.length, approvedCount: approvedPosts.length };
           } catch {
-            return { ...client, count: 0 };
+            return { ...client, count: 0, approvedCount: 0 };
           }
         })
       );
-      setClients(withCounts);
+      setClients(withCounts as Client[]);
       // Auto-select first client with items to check
       const firstWithItems = withCounts.find((c) => c.count > 0);
       setSelectedClientId(firstWithItems?.id ?? null);

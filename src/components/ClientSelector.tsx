@@ -7,6 +7,7 @@ type Client = {
   baseId: string;
   tableName: string;
   count: number;
+  approvedCount: number;
 };
 
 type Props = {
@@ -57,18 +58,22 @@ export default function ClientSelector({
           {clients.map((client) => (
             <li key={client.id}>
               <button
-                className={`flex items-center justify-between w-full px-4 py-2 rounded-lg transition
-                  ${
-                    selectedClientId === client.id
-                      ? "bg-blue-100 text-blue-700 font-semibold"
-                      : "hover:bg-gray-100"
+                className={`flex items-center justify-between w-full px-4 py-2 rounded-lg transition justify-between
+                  ${selectedClientId === client.id
+                    ? "bg-blue-100 text-blue-700 font-semibold"
+                    : "hover:bg-gray-100"
                   }`}
                 onClick={() => onSelect(client.id)}
               >
                 <span>{client.name}</span>
-                <span className="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded">
-                  {client.count} to check
-                </span>
+                <div className="flex items-center">
+                  <span className="text-xs bg-green-50 text-green-600 px-2 py-0.5 rounded mr-2">
+                    {client.approvedCount} approved
+                  </span>
+                  <span className="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded">
+                    {client.count} to check
+                  </span>
+                </div>
               </button>
             </li>
           ))}
