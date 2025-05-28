@@ -67,7 +67,10 @@ export default function ClientSelector({
               >
                 <span>{client.name}</span>
                 <div className="flex items-center">
-                  <span className="text-xs bg-green-50 text-green-600 px-2 py-0.5 rounded mr-2">
+                  <span className={`text-xs px-2 py-0.5 rounded mr-2
+                    ${client.approvedCount > 14 ? 'bg-green-500 text-white'
+                      : client.approvedCount >= 8 ? 'bg-orange-500 text-white'
+                        : 'bg-red-500 text-white'}`}>
                     {client.approvedCount} approved
                   </span>
                   <span className="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded">
