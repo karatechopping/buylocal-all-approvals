@@ -2,17 +2,15 @@
 STANDARD,firstName,,First Name,,,TEXT,,,Basic Information
 STANDARD,lastName,,Last Name,,,TEXT,,,Basic Information
 STANDARD,email,,Email,,,TEXT,,,Basic Information
-STANDARD,website,,Website,,,TEXT,,,Basic Information
-STANDARD,companyName,,Compay Name,,,TEXT,,,Basic Information
 STANDARD,phone,,Phone,,,TEXT,,,Basic Information
+STANDARD,companyName,,Company Name,,,TEXT,,,Basic Information
+STANDARD,website,,Website,,,TEXT,,,Basic Information
+CUSTOM,contact.business_email,a3NIoUsw34RyBPlWC38C,Business Email,,,TEXT,,,Basic Information
+CUSTOM,contact.business_phone,fYgZzSg0pZNNu97vvWT0,Business Number,,,TEXT,,,Basic Information
 STANDARD,address1,,Address,,,TEXT,,,Basic Information
 STANDARD,city,,City ,,,TEXT,,,Basic Information
-STANDARD,country,,Country,,,TEXT,,,Basic Information
-CUSTOM,contact.primary_business_number,JGEwIvsxVpE5O82qBecR,Primary Business Number,,,TEXT,,,Basic Information
-CUSTOM,contact.business_email,a3NIoUsw34RyBPlWC38C,Business Email,,,TEXT,,,Basic Information
-CUSTOM,contact.company_email_address,m6MqGJBXbbPkiQ576y,Company email address,,,TEXT,,,Basic Information
-CUSTOM,contact.website,ykA8ytFm7xS8jhitFnJe,Website.,,,TEXT,,,Basic Information
 CUSTOM,contact.select_your_region_location,XkHlXb78oCFyOlDGlmP8,Buy Local Region,,,TEXT,,,Basic Information
+STANDARD,country,,Country,,,TEXT,,,Basic Information
 CUSTOM,contact.featured_upgrade_date,E3hX9H8jB9EYovEqS5NM,Featured Upgrade Date,,,TEXT,,,Basic Information
 CUSTOM,contact.reach_profile_url,tIwQuSBwmxxlPyqKXSCb,Profile URL,,,LINK,EDITABLE,,Final Delivery
 CUSTOM,contact.profile_approval,ujhPrdQuM1pKl1o81YeT,Profile Approval,In Progress|Awaiting Approval|Approved|Re-Do,tIwQuSBwmxxlPyqKXSCb,BUTTONS,,Awaiting Approval|Approved|Re-Do,Final Delivery
