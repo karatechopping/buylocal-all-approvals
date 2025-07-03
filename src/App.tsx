@@ -23,6 +23,7 @@ interface PostFields {
   Status?: string;
   imageUrls1x1?: string;
   imageUrls2x3?: string;
+  content?: string;
 }
 
 type Client = {
@@ -39,6 +40,7 @@ type ApprovalItem = {
   id: string;
   imageUrls1x1?: string;
   imageUrls2x3?: string;
+  content?: string;
 };
 
 type ViewMode = 'tool-select' | 'social' | 'featured';
@@ -147,13 +149,14 @@ function App() {
           client.baseId,
           client.tableName,
           `Status="Check"`,
-          ["imageUrls1x1", "imageUrls2x3"]
+          ["imageUrls1x1", "imageUrls2x3", "content"]
         );
         setApprovalItems(
           posts.map((rec) => ({
             id: rec.id,
             imageUrls1x1: rec.fields.imageUrls1x1,
             imageUrls2x3: rec.fields.imageUrls2x3,
+            content: rec.fields.content,
           }))
         );
       } catch (e: any) {
@@ -186,6 +189,25 @@ function App() {
       setError("Failed to update status. " + e.message);
     } finally {
       setActionLoading((prev) => prev.filter((x) => x !== id));
+    }
+  };
+
+  // Handle content updates
+  const handleContentUpdate = async (id: string, content: string) => {
+    const client = clients.find((c) => c.id === selectedClientId);
+    if (!client) return;
+    setError(null);
+    try {
+      await updateAirtableRecord(client.baseId, client.tableName, id, {
+        content: content,
+      });
+      setApprovalItems((items) =>
+        items.map((item) =>
+          item.id === id ? { ...item, content } : item
+        )
+      );
+    } catch (e: any) {
+      setError("Failed to update content. " + e.message);
     }
   };
 
@@ -315,6 +337,7 @@ function App() {
                       <ApprovalList
                         items={approvalItems}
                         onAction={handleAction}
+                        onContentUpdate={handleContentUpdate}
                         loadingIds={actionLoading}
                       />
                     )}

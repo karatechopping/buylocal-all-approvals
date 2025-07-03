@@ -1,20 +1,24 @@
 import React, { useState } from "react";
-import { CheckCircle2, RotateCcw, Trash2 } from "lucide-react";
+import { CheckCircle2, RotateCcw, Trash2, Edit2, Save, X } from "lucide-react";
 
 type ApprovalItem = {
   id: string;
   imageUrls1x1?: string;
   imageUrls2x3?: string;
+  content?: string;
 };
 
 type Props = {
   items: ApprovalItem[];
   onAction: (id: string, action: "Approved" | "Redo" | "Discard") => void;
+  onContentUpdate: (id: string, content: string) => void;
   loadingIds: string[];
 };
 
-export default function ApprovalList({ items, onAction, loadingIds }: Props) {
+export default function ApprovalList({ items, onAction, onContentUpdate, loadingIds }: Props) {
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editContent, setEditContent] = useState<string>("");
 
   const handleSelectAll = (checked: boolean) => {
     setSelectedItems(checked ? items.map(item => item.id) : []);
@@ -176,9 +180,21 @@ export default function ApprovalList({ items, onAction, loadingIds }: Props) {
                 {/* Mobile Buttons */}
                 <div className="flex min-[930px]:hidden gap-3">
                   <button
+                    className="p-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow disabled:opacity-50"
+                    onClick={() => {
+                      setEditingId(item.id);
+                      setEditContent(item.content || "");
+                    }}
+                    disabled={loadingIds.includes(item.id) || editingId === item.id}
+                    title="Edit Content"
+                  >
+                    <Edit2 className="w-5 h-5" />
+                  </button>
+                  <button
                     className="p-3 bg-green-500 hover:bg-green-600 text-white rounded-lg shadow disabled:opacity-50"
                     onClick={() => onAction(item.id, "Approved")}
                     disabled={loadingIds.includes(item.id)}
+                    title="Approve for posting"
                   >
                     <CheckCircle2 className="w-5 h-5" />
                   </button>
@@ -186,6 +202,7 @@ export default function ApprovalList({ items, onAction, loadingIds }: Props) {
                     className="p-3 bg-yellow-400 hover:bg-yellow-500 text-gray-900 rounded-lg shadow disabled:opacity-50"
                     onClick={() => onAction(item.id, "Redo")}
                     disabled={loadingIds.includes(item.id)}
+                    title="!! Only recreates image, not text !!"
                   >
                     <RotateCcw className="w-5 h-5" />
                   </button>
@@ -193,14 +210,63 @@ export default function ApprovalList({ items, onAction, loadingIds }: Props) {
                     className="p-3 bg-red-500 hover:bg-red-600 text-white rounded-lg shadow disabled:opacity-50"
                     onClick={() => onAction(item.id, "Discard")}
                     disabled={loadingIds.includes(item.id)}
+                    title="Trash"
                   >
                     <Trash2 className="w-5 h-5" />
                   </button>
                 </div>
               </div>
               
-              {/* Images Column */}
-              <div className="flex-1 flex flex-col min-[930px]:flex-row gap-8 min-[930px]:gap-6 min-[930px]:items-start">
+              {/* Content and Images Column */}
+              <div className="flex-1 flex flex-col gap-4">
+                {/* Content Text */}
+                {(item.content || editingId === item.id) && (
+                  <div className="bg-gray-50 p-4 rounded-lg border">
+                    <div className="flex items-start justify-between gap-2 mb-2">
+                      <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">Post Content</span>
+                    </div>
+                    {editingId === item.id ? (
+                      <div className="space-y-3">
+                        <textarea
+                          value={editContent}
+                          onChange={(e) => setEditContent(e.target.value)}
+                          className="w-full p-3 border rounded-md text-sm leading-relaxed resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          rows={4}
+                          placeholder="Enter post content..."
+                        />
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => {
+                              onContentUpdate(item.id, editContent);
+                              setEditingId(null);
+                            }}
+                            className="flex items-center gap-1 px-3 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-semibold text-sm shadow transition"
+                          >
+                            <Save className="w-4 h-4" />
+                            <span>Save</span>
+                          </button>
+                          <button
+                            onClick={() => {
+                              setEditingId(null);
+                              setEditContent("");
+                            }}
+                            className="flex items-center gap-1 px-3 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg font-semibold text-sm shadow transition"
+                          >
+                            <X className="w-4 h-4" />
+                            <span>Cancel</span>
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <p className="text-gray-800 whitespace-pre-wrap text-sm leading-relaxed">
+                        {item.content || <span className="text-gray-400 italic">No content</span>}
+                      </p>
+                    )}
+                  </div>
+                )}
+                
+                {/* Images */}
+                <div className="flex flex-col min-[930px]:flex-row gap-8 min-[930px]:gap-6 min-[930px]:items-start">
                 {item.imageUrls1x1 && (
                   <div className="max-[930px]:w-full max-[930px]:flex max-[930px]:justify-center">
                     <img
@@ -253,14 +319,28 @@ export default function ApprovalList({ items, onAction, loadingIds }: Props) {
                     />
                   </div>
                 )}
+                </div>
               </div>
               
               {/* Desktop Buttons Column */}
               <div className="hidden min-[930px]:flex flex-col gap-2 shrink-0 ml-6">
                 <button
+                  className="flex items-center gap-1 px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-semibold text-sm shadow transition disabled:opacity-50"
+                  onClick={() => {
+                    setEditingId(item.id);
+                    setEditContent(item.content || "");
+                  }}
+                  disabled={loadingIds.includes(item.id) || editingId === item.id}
+                  title="Edit Content"
+                >
+                  <Edit2 className="w-5 h-5" />
+                  <span>Edit</span>
+                </button>
+                <button
                   className="flex items-center gap-1 px-3 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-semibold text-sm shadow transition disabled:opacity-50"
                   onClick={() => onAction(item.id, "Approved")}
                   disabled={loadingIds.includes(item.id)}
+                  title="Approve for posting"
                 >
                   <CheckCircle2 className="w-5 h-5" />
                   <span>Approve</span>
@@ -269,6 +349,7 @@ export default function ApprovalList({ items, onAction, loadingIds }: Props) {
                   className="flex items-center gap-1 px-3 py-2 bg-yellow-400 hover:bg-yellow-500 text-gray-900 rounded-lg font-semibold text-sm shadow transition disabled:opacity-50"
                   onClick={() => onAction(item.id, "Redo")}
                   disabled={loadingIds.includes(item.id)}
+                  title="!! Only recreates image, not text !!"
                 >
                   <RotateCcw className="w-5 h-5" />
                   <span>Redo</span>
@@ -277,6 +358,7 @@ export default function ApprovalList({ items, onAction, loadingIds }: Props) {
                   className="flex items-center gap-1 px-3 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-semibold text-sm shadow transition disabled:opacity-50"
                   onClick={() => onAction(item.id, "Discard")}
                   disabled={loadingIds.includes(item.id)}
+                  title="Trash"
                 >
                   <Trash2 className="w-5 h-5" />
                   <span>Discard</span>
