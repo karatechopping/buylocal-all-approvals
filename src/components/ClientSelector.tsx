@@ -211,12 +211,17 @@ export default function ClientSelector({
                       e.stopPropagation();
                       handleCreate(client);
                     }}
+                    className="text-xs px-2 py-0.5 rounded bg-blue-500 text-white hover:bg-blue-600 transition-colors"
+                  >
+                    create more
+                  </button>
+                  <span
                     className={"text-xs px-2 py-0.5 rounded " + (client.approvedCount > 14 ? "bg-green-500 text-white"
                       : client.approvedCount >= 8 ? "bg-orange-500 text-white"
                         : "bg-red-500 text-white")}
                   >
                     {client.approvedCount} approved
-                  </button>
+                  </span>
                   <span className="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded">
                     {client.count} to check
                   </span>
