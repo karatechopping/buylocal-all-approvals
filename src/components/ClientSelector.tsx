@@ -123,7 +123,7 @@ export default function ClientSelector({
     };
 
     try {
-      const response = await fetch('https://n8n.marketingtech.pro/webhook/5a2cb1c9-771d-42aa-b1ee-27b2ff4416a9', {
+      const response = await fetch('https://n8n.marketingtech.pro/webhook/create-social-media-posts-prod', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
